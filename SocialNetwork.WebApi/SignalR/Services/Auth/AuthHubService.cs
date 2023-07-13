@@ -2,23 +2,25 @@ using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Friend;
 using SocialNetwork.Domain.Repositories;
-using SocialNetwork.WebApi.Infrastructures.SignalR.Hubs;
-using SocialNetwork.WebApi.Infrastructures.SignalR.StronglyTypedHubs;
+using SocialNetwork.WebApi.SignalR.Hubs;
+using SocialNetwork.WebApi.SignalR.StronglyTypedHubs;
 
-namespace SocialNetwork.WebApi.Infrastructures.SignalR;
+namespace SocialNetwork.WebApi.SignalR.Services.Auth;
 
-public class HubService : IHubService
+public class AuthHubService : IAuthHubService
 {
     private readonly IHubContext<AuthHub, IHub> _authHubContext;
+    private readonly IFriendRepository _friendService;
 
-    public HubService(IHubContext<AuthHub, IHub> authHubContext)
+    public AuthHubService(IHubContext<AuthHub, IHub> authHubContext, IFriendRepository friendService)
     {
         _authHubContext = authHubContext;
+        _friendService = friendService;
     }
 
-    public void NotifyUserConnectionToFriends(UserEntity user, IFriendRepository friendService)
+    public void NotifyUserConnectionToFriends(UserEntity user)
     {
-        IEnumerable<FriendEntity> friendList = friendService.Execute(
+        IEnumerable<FriendEntity> friendList = _friendService.Execute(
             new FriendListByStateQuery(user.Id, EFriendState.Accepted)
         );
 
@@ -32,7 +34,7 @@ public class HubService : IHubService
                     .AddToGroup(friendsGroup);
 
                 _authHubContext.Clients.Group(friendsGroup)
-                    .ReceiveMessage($"User {user.FirstName} {user.Lastname} has connected.");
+                    .ReceiveMessage($"{user.FirstName} {user.Lastname} has connected.");
             }
         }
     }

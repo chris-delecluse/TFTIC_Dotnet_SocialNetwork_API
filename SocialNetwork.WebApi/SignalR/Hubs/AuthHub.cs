@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.WebApi.Infrastructures.SignalR.StronglyTypedHubs;
+using SocialNetwork.WebApi.SignalR.StronglyTypedHubs;
 
-namespace SocialNetwork.WebApi.Infrastructures.SignalR.Hubs;
+namespace SocialNetwork.WebApi.SignalR.Hubs;
 
 public class AuthHub : Hub<IHub>
 {

@@ -8,4 +8,5 @@ namespace SocialNetwork.Domain.Repositories;
 
 public interface IAuthRepository :
     ICommandHandler<RegisterCommand>,
-    IQueryHandler<LoginQuery, UserEntity?> { }
+    IQueryHandler<LoginQuery, UserEntity?>
+{ }

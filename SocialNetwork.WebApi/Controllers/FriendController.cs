@@ -5,6 +5,7 @@ using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Friend;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Cqs.Shared;
+using SocialNetwork.WebApi.Infrastructures.Token;
 using SocialNetwork.WebApi.Models.Forms.Friend;
 using SocialNetwork.WebApi.Models.Mappers;
 
@@ -14,17 +15,25 @@ namespace SocialNetwork.WebApi.Controllers;
 public class FriendController : ControllerBase
 {
     private readonly IFriendRepository _friendService;
+    private readonly ITokenService _tokenService;
 
-    public FriendController(IFriendRepository friendService) { _friendService = friendService; }
+    public FriendController(IFriendRepository friendService, ITokenService tokenService)
+    {
+        _friendService = friendService;
+        _tokenService = tokenService;
+    }
 
     [HttpPost]
     public IActionResult Add(FriendForm form)
     {
-        CqsResult result = _friendService.Execute(
-            new FriendCommand(GetUserIdFromToken(), form.UserId, EFriendState.Pending)
+        CqsResult result = _friendService.Execute(new FriendCommand(_tokenService.ExtractUserIdFromToken(HttpContext),
+                form.UserId,
+                EFriendState.Pending
+            )
         );
 
-        if (result.IsFailure) return BadRequest(new { result.Message });
+        if (result.IsFailure) 
+            return BadRequest(new { result.Message });
 
         return Created("", new { Message = "Friend request send successfully." });
     }
@@ -32,7 +41,7 @@ public class FriendController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(_friendService.Execute(new FriendListQuery(GetUserIdFromToken()))
+        return Ok(_friendService.Execute(new FriendListQuery(_tokenService.ExtractUserIdFromToken(HttpContext)))
             .ToFriendDto()
         );
     }
@@ -41,7 +50,7 @@ public class FriendController : ControllerBase
     public IActionResult Update(UpdateFriendRequestForm form)
     {
         CqsResult result = _friendService.Execute(new UpdateFriendStateCommand(form.RequestId,
-                GetUserIdFromToken(),
+                _tokenService.ExtractUserIdFromToken(HttpContext),
                 form.IsAccepted ? EFriendState.Accepted : EFriendState.Rejected
             )
         );
@@ -51,6 +60,4 @@ public class FriendController : ControllerBase
 
         return Accepted(new { Message = "Friend request updated successfully." });
     }
-
-    private int GetUserIdFromToken() => int.Parse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id")!.Value);
 }
