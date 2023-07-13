@@ -8,7 +8,6 @@ using SocialNetwork.Tools.Ado;
 using SocialNetwork.Tools.Cqs.Shared;
 
 namespace SocialNetwork.Domain.Services;
-
 public class AuthService : IAuthRepository
 {
     private readonly IDbConnection _dbConnection;

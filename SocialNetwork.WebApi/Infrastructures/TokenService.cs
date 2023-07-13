@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Tools.JWT;
 
-namespace SocialNetwork.WebApi.Infrastructures.Token;
+namespace SocialNetwork.WebApi.Infrastructures;
 
 public class TokenService : ITokenService
 {
@@ -21,8 +21,8 @@ public class TokenService : ITokenService
             .AddIssuer(_configuration.GetValue<string>("Jwt:Issuer")!)
             .AddAudience(_configuration.GetValue<string>("Jwt:Audience")!)
             .AddClaim("Id", user.Id.ToString())
-            .AddClaim(JwtRegisteredClaimNames.FamilyName, user.FirstName)
-            .AddClaim(JwtRegisteredClaimNames.GivenName, user.Lastname)
+            .AddClaim(JwtRegisteredClaimNames.GivenName, user.FirstName)
+            .AddClaim(JwtRegisteredClaimNames.FamilyName, user.Lastname)
             .AddClaim(JwtRegisteredClaimNames.Email, user.Email)
             .AddClaim(JwtRegisteredClaimNames.Sub, "social network api by diwa")
             .AddClaim(JwtRegisteredClaimNames.Jti,
@@ -32,7 +32,4 @@ public class TokenService : ITokenService
             .SetExpiration(exp)
             .Build();
     }
-
-    public int ExtractUserIdFromToken(HttpContext httpContext)
-        => int.Parse(httpContext.User.Claims.FirstOrDefault(c => c.Type == "Id")!.Value);
 }

@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Commands.Comment;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Cqs.Shared;
-using SocialNetwork.WebApi.Infrastructures.Token;
+using SocialNetwork.WebApi.Extensions;
+using SocialNetwork.WebApi.Infrastructures;
 using SocialNetwork.WebApi.Models.Forms.Comment;
 
 namespace SocialNetwork.WebApi.Controllers;
@@ -12,12 +13,10 @@ namespace SocialNetwork.WebApi.Controllers;
 public class CommentController : ControllerBase
 {
     private readonly ICommentRepository _commentService;
-    private readonly ITokenService _tokenService;
 
-    public CommentController(ICommentRepository commentService, ITokenService tokenService)
+    public CommentController(ICommentRepository commentService)
     {
         _commentService = commentService;
-        _tokenService = tokenService;
     }
 
     [HttpPost]
@@ -25,7 +24,7 @@ public class CommentController : ControllerBase
     {
         CqsResult result = _commentService.Execute(new CommentCommand(form.Content,
                 form.PostId,
-                _tokenService.ExtractUserIdFromToken(HttpContext)
+                HttpContext.ExtractDataFromToken<int>("Id")
             )
         );
 

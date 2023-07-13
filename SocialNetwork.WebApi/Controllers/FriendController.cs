@@ -5,7 +5,8 @@ using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Friend;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Cqs.Shared;
-using SocialNetwork.WebApi.Infrastructures.Token;
+using SocialNetwork.WebApi.Extensions;
+using SocialNetwork.WebApi.Infrastructures;
 using SocialNetwork.WebApi.Models.Forms.Friend;
 using SocialNetwork.WebApi.Models.Mappers;
 
@@ -15,18 +16,16 @@ namespace SocialNetwork.WebApi.Controllers;
 public class FriendController : ControllerBase
 {
     private readonly IFriendRepository _friendService;
-    private readonly ITokenService _tokenService;
 
-    public FriendController(IFriendRepository friendService, ITokenService tokenService)
+    public FriendController(IFriendRepository friendService)
     {
         _friendService = friendService;
-        _tokenService = tokenService;
     }
 
     [HttpPost]
     public IActionResult Add(FriendForm form)
     {
-        CqsResult result = _friendService.Execute(new FriendCommand(_tokenService.ExtractUserIdFromToken(HttpContext),
+        CqsResult result = _friendService.Execute(new FriendCommand(HttpContext.ExtractDataFromToken<int>("Id"),
                 form.UserId,
                 EFriendState.Pending
             )
@@ -41,7 +40,7 @@ public class FriendController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(_friendService.Execute(new FriendListQuery(_tokenService.ExtractUserIdFromToken(HttpContext)))
+        return Ok(_friendService.Execute(new FriendListQuery(HttpContext.ExtractDataFromToken<int>("Id")))
             .ToFriendDto()
         );
     }
@@ -50,7 +49,7 @@ public class FriendController : ControllerBase
     public IActionResult Update(UpdateFriendRequestForm form)
     {
         CqsResult result = _friendService.Execute(new UpdateFriendStateCommand(form.RequestId,
-                _tokenService.ExtractUserIdFromToken(HttpContext),
+                HttpContext.ExtractDataFromToken<int>("Id"),
                 form.IsAccepted ? EFriendState.Accepted : EFriendState.Rejected
             )
         );

@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Commands.Like;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Cqs.Shared;
-using SocialNetwork.WebApi.Infrastructures.Token;
+using SocialNetwork.WebApi.Extensions;
+using SocialNetwork.WebApi.Infrastructures;
 using SocialNetwork.WebApi.Models.Forms.Like;
 
 namespace SocialNetwork.WebApi.Controllers;
@@ -12,19 +13,17 @@ namespace SocialNetwork.WebApi.Controllers;
 public class LikeController : ControllerBase
 {
     private readonly ILikeRepository _likeService;
-    private readonly ITokenService _tokenService;
 
-    public LikeController(ILikeRepository likeService, ITokenService tokenService)
+    public LikeController(ILikeRepository likeService)
     {
         _likeService = likeService;
-        _tokenService = tokenService;
     }
 
     [HttpPost]
     public IActionResult Add(LikeForm form)
     {
         CqsResult result =
-            _likeService.Execute(new LikeCommand(form.PostId, _tokenService.ExtractUserIdFromToken(HttpContext)));
+            _likeService.Execute(new LikeCommand(form.PostId, HttpContext.ExtractDataFromToken<int>("Id")));
 
         if (result.IsFailure) 
             return BadRequest(new { result.Message });

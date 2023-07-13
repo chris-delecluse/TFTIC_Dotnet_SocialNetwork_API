@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Domain.Services;
-using SocialNetwork.WebApi.Infrastructures.Token;
+using SocialNetwork.WebApi.Infrastructures;
 using SocialNetwork.WebApi.SignalR.Services.Auth;
 
 namespace SocialNetwork.WebApi.DependencyInjections;
@@ -17,6 +17,7 @@ public static class ServiceExtensions
     {
         service.AddSingleton<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("Default")));
 
+        service.AddSingleton<IUserConnectionState, UserConnectionState>();
         service.AddScoped<IAuthHubService, AuthHubService>();
 
         service.AddScoped<ITokenService, TokenService>();

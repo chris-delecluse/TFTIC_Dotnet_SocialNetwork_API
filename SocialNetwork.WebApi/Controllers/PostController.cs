@@ -5,7 +5,7 @@ using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Post;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Cqs.Shared;
-using SocialNetwork.WebApi.Infrastructures.Token;
+using SocialNetwork.WebApi.Extensions;
 using SocialNetwork.WebApi.Models.Forms.Post;
 using SocialNetwork.WebApi.Models.Mappers;
 
@@ -15,19 +15,17 @@ namespace SocialNetwork.WebApi.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostRepository _postService;
-    private readonly ITokenService _tokenService;
 
-    public PostController(IPostRepository postService, ITokenService tokenService)
+    public PostController(IPostRepository postService)
     {
         _postService = postService;
-        _tokenService = tokenService;
     }
 
     [HttpPost]
     public IActionResult Add(PostForm form)
     {
         CqsResult result =
-            _postService.Execute(new PostCommand(form.Content, _tokenService.ExtractUserIdFromToken(HttpContext)));
+            _postService.Execute(new PostCommand(form.Content, HttpContext.ExtractDataFromToken<int>("Id")));
 
         if (result.IsFailure)
             return BadRequest(new { result.Message });
@@ -37,9 +35,9 @@ public class PostController : ControllerBase
 
     [HttpGet]
     public IActionResult Get()
-    {
+    { 
         return Ok(_postService
-            .Execute(new AllPostQuery(_tokenService.ExtractUserIdFromToken(HttpContext)))
+            .Execute(new AllPostQuery(HttpContext.ExtractDataFromToken<int>("Id")))
             .ToPostDto()
         );
     }
@@ -47,9 +45,10 @@ public class PostController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult Get(int id)
     {
-        PostEntity? post = _postService.Execute(new PostQuery(id, _tokenService.ExtractUserIdFromToken(HttpContext)));
+        PostEntity? post = _postService.Execute(new PostQuery(id, HttpContext.ExtractDataFromToken<int>("Id")));
 
-        if (post is null) return NotFound(new { Message = $"Post with id '{id}' does not exists." });
+        if (post is null) 
+            return NotFound(new { Message = $"Post with id '{id}' does not exists." });
 
         return Ok(post.ToPostDto());
     }

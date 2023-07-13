@@ -38,4 +38,25 @@ public class AuthHubService : IAuthHubService
             }
         }
     }
+
+    public void NotifyUserDisConnectionToFriends(int id, string firstName, string lastName)
+    {
+        IEnumerable<FriendEntity> friendList = _friendService.Execute(
+            new FriendListByStateQuery(id, EFriendState.Accepted)
+        );
+
+        foreach (FriendEntity friend in friendList)
+        {
+            if (friend.ResponderId != id)
+            {
+                string friendsGroup = $"FriendsGroup_{friend.ResponderId}";
+
+                _authHubContext.Clients.Group(friendsGroup)
+                    .AddToGroup(friendsGroup);
+
+                _authHubContext.Clients.Group(friendsGroup)
+                    .ReceiveMessage($"{firstName} {lastName} has disconnected.");
+            }
+        }
+    }
 }
