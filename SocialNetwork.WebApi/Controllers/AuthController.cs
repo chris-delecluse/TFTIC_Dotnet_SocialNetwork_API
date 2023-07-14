@@ -10,7 +10,7 @@ using SocialNetwork.WebApi.Extensions;
 using SocialNetwork.WebApi.Infrastructures;
 using SocialNetwork.WebApi.Models.Forms.Auth;
 using SocialNetwork.WebApi.Models.Mappers;
-using SocialNetwork.WebApi.SignalR.Services.Auth;
+using SocialNetwork.WebApi.SignalR.Services;
 
 namespace SocialNetwork.WebApi.Controllers;
 
@@ -20,13 +20,13 @@ public class AuthController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly IAuthRepository _authService;
     private readonly IUserConnectionState _connectionState;
-    private readonly IAuthHubService _hubService;
+    private readonly IHubService _hubService;
 
     public AuthController(
         ITokenService tokenService,
         IAuthRepository authService,
         IUserConnectionState connectionState,
-        IAuthHubService hubService
+        IHubService hubService
     )
     {
         _tokenService = tokenService;
@@ -66,7 +66,7 @@ public class AuthController : ControllerBase
     public IActionResult Logout()
     {
         int userId = HttpContext.ExtractDataFromToken<int>("Id");
-
+        
         _connectionState.RemoveUserToConnectedList(userId);
         _hubService.NotifyUserDisConnectionToFriends(userId,
             HttpContext.ExtractDataFromToken<string>(ClaimTypes.GivenName),

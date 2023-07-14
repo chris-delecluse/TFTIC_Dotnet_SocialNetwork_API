@@ -7,18 +7,18 @@ using Microsoft.OpenApi.Models;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Domain.Services;
 using SocialNetwork.WebApi.Infrastructures;
-using SocialNetwork.WebApi.SignalR.Services.Auth;
+using SocialNetwork.WebApi.SignalR.Services;
 
 namespace SocialNetwork.WebApi.DependencyInjections;
 
-public static class ServiceExtensions
+internal static class ServiceExtensions
 {
-    public static IServiceCollection AddCustomServices(this IServiceCollection service, IConfiguration configuration)
+    internal static IServiceCollection AddCustomServices(this IServiceCollection service, IConfiguration configuration)
     {
         service.AddSingleton<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("Default")));
-
         service.AddSingleton<IUserConnectionState, UserConnectionState>();
-        service.AddScoped<IAuthHubService, AuthHubService>();
+        
+        service.AddScoped<IHubService, HubService>();
 
         service.AddScoped<ITokenService, TokenService>();
         service.AddScoped<IAuthRepository, AuthService>();
