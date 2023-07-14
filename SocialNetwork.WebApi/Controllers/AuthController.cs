@@ -6,11 +6,12 @@ using SocialNetwork.Domain.Queries.Auth;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
 using SocialNetwork.Tools.Cqs.Shared;
-using SocialNetwork.WebApi.Extensions;
-using SocialNetwork.WebApi.Infrastructures;
+using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.Infrastructures.AppStates;
+using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Models.Forms.Auth;
 using SocialNetwork.WebApi.Models.Mappers;
-using SocialNetwork.WebApi.SignalR.Services;
+using SocialNetwork.WebApi.WebSockets.Services;
 
 namespace SocialNetwork.WebApi.Controllers;
 

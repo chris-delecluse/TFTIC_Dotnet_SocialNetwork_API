@@ -1,5 +1,5 @@
-using SocialNetwork.WebApi.DependencyInjections;
-using SocialNetwork.WebApi.SignalR.Hubs;
+using SocialNetwork.WebApi.Infrastructures.DependencyInjections;
+using SocialNetwork.WebApi.WebSockets.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -23,10 +23,10 @@ app.UseAuthorization();
 app.UseCors();
 app.MapControllers();
 
-app.MapHub<AuthHub>("/social-network-auth");
-app.MapHub<ChatHub>("/social-network-chat");
-app.MapHub<PostHub>("/social-network-post");
-app.MapHub<CommentHub>("/social-network-comment");
-app.MapHub<LikeHub>("/social-network-like");
+app.MapHub<AuthHub>("/hub/auth");
+app.MapHub<ChatHub>("/hub/chat");
+app.MapHub<PostHub>("/hub/post");
+app.MapHub<CommentHub>("/hub/comment");
+app.MapHub<LikeHub>("/hub/like");
 
 app.Run();

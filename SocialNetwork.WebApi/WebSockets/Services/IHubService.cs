@@ -1,7 +1,7 @@
 
 using SocialNetwork.Models;
 
-namespace SocialNetwork.WebApi.SignalR.Services;
+namespace SocialNetwork.WebApi.WebSockets.Services;
 
 public interface IHubService
 {

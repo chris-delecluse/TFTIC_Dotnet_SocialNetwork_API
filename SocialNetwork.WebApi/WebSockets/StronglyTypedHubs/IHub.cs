@@ -1,4 +1,4 @@
-namespace SocialNetwork.WebApi.SignalR.StronglyTypedHubs;
+namespace SocialNetwork.WebApi.WebSockets.StronglyTypedHubs;
 
 public interface IHub
 {

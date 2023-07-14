@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Domain.Queries.Friend;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
-using SocialNetwork.WebApi.SignalR.Hubs;
-using SocialNetwork.WebApi.SignalR.StronglyTypedHubs;
+using SocialNetwork.WebApi.WebSockets.StronglyTypedHubs;
+using SocialNetwork.WebApi.WebSockets.Hubs;
 
-namespace SocialNetwork.WebApi.SignalR.Services;
+namespace SocialNetwork.WebApi.WebSockets.Services;
 
 public class HubService : IHubService
 {
@@ -77,8 +77,6 @@ public class HubService : IHubService
     }
 
     private void NotifyGroup<THub>(string groupName, int targetId, string message, IHubContext<THub, IHub> hubContext)
-        where THub : Hub<IHub>
-    {
+        where THub : Hub<IHub> =>
         NotifyGroup($"{groupName}_{targetId}", message, hubContext);
-    }
 }

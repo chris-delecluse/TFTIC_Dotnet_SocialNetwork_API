@@ -6,10 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Domain.Services;
-using SocialNetwork.WebApi.Infrastructures;
-using SocialNetwork.WebApi.SignalR.Services;
+using SocialNetwork.WebApi.Infrastructures.AppStates;
+using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.WebSockets.Services;
 
-namespace SocialNetwork.WebApi.DependencyInjections;
+namespace SocialNetwork.WebApi.Infrastructures.DependencyInjections;
 
 internal static class ServiceExtensions
 {

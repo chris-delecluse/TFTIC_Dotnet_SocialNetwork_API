@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Commands.Comment;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Cqs.Shared;
-using SocialNetwork.WebApi.Extensions;
-using SocialNetwork.WebApi.Infrastructures;
+using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Models.Forms.Comment;
 
 namespace SocialNetwork.WebApi.Controllers;

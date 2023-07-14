@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using SocialNetwork.Models;
 using SocialNetwork.Tools.JWT;
 
-namespace SocialNetwork.WebApi.Infrastructures;
+namespace SocialNetwork.WebApi.Infrastructures.Security;
 
 public class TokenService : ITokenService
 {

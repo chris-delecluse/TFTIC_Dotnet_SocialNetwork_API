@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace SocialNetwork.WebApi.Extensions;
+namespace SocialNetwork.WebApi.Infrastructures.Extensions;
 
 internal static class HttpContextServiceExtension
 {

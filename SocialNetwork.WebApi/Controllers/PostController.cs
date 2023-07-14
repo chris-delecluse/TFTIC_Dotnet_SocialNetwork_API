@@ -5,7 +5,7 @@ using SocialNetwork.Domain.Queries.Post;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
 using SocialNetwork.Tools.Cqs.Shared;
-using SocialNetwork.WebApi.Extensions;
+using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Models.Forms.Post;
 using SocialNetwork.WebApi.Models.Mappers;
 

@@ -1,4 +1,4 @@
-namespace SocialNetwork.WebApi.Infrastructures;
+namespace SocialNetwork.WebApi.Infrastructures.AppStates;
 
 public interface IUserConnectionState
 {
