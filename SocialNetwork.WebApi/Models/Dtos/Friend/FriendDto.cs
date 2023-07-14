@@ -1,5 +1,3 @@
-using SocialNetwork.Domain.Entities;
-
 namespace SocialNetwork.WebApi.Models.Dtos.Friend;
 
 public class FriendDto

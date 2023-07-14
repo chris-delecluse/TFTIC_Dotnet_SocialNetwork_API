@@ -1,4 +1,4 @@
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Models;
 
 namespace SocialNetwork.WebApi.Infrastructures;
 

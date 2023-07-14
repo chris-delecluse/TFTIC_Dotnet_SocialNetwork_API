@@ -1,9 +1,9 @@
 using System.Data;
 using SocialNetwork.Domain.Commands.Post;
-using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Mappers;
 using SocialNetwork.Domain.Queries.Post;
 using SocialNetwork.Domain.Repositories;
+using SocialNetwork.Models;
 using SocialNetwork.Tools.Ado;
 using SocialNetwork.Tools.Cqs.Shared;
 

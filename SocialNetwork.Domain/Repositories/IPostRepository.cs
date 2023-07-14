@@ -1,6 +1,6 @@
 using SocialNetwork.Domain.Commands.Post;
-using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Post;
+using SocialNetwork.Models;
 using SocialNetwork.Tools.Cqs.Commands;
 using SocialNetwork.Tools.Cqs.Queries;
 

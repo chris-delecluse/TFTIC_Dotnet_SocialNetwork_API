@@ -1,5 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Models;
 using SocialNetwork.Tools.JWT;
 
 namespace SocialNetwork.WebApi.Infrastructures;
@@ -25,10 +25,7 @@ public class TokenService : ITokenService
             .AddClaim(JwtRegisteredClaimNames.FamilyName, user.Lastname)
             .AddClaim(JwtRegisteredClaimNames.Email, user.Email)
             .AddClaim(JwtRegisteredClaimNames.Sub, "social network api by diwa")
-            .AddClaim(JwtRegisteredClaimNames.Jti,
-                Guid.NewGuid()
-                    .ToString()
-            )
+            .AddClaim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             .SetExpiration(exp)
             .Build();
     }

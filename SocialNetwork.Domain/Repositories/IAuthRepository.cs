@@ -1,6 +1,6 @@
 using SocialNetwork.Domain.Commands.Auth;
-using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Auth;
+using SocialNetwork.Models;
 using SocialNetwork.Tools.Cqs.Commands;
 using SocialNetwork.Tools.Cqs.Queries;
 

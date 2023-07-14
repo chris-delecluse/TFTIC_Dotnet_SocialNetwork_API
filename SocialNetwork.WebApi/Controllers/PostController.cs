@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Commands.Post;
-using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Post;
 using SocialNetwork.Domain.Repositories;
+using SocialNetwork.Models;
 using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Extensions;
 using SocialNetwork.WebApi.Models.Forms.Post;

@@ -1,4 +1,4 @@
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Models;
 using SocialNetwork.WebApi.Models.Dtos.Friend;
 
 namespace SocialNetwork.WebApi.Models.Mappers;

@@ -1,4 +1,4 @@
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Models;
 using SocialNetwork.Tools.Cqs.Commands;
 
 namespace SocialNetwork.Domain.Commands.Friend;

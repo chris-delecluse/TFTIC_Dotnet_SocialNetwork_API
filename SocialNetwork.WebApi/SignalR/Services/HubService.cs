@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Friend;
 using SocialNetwork.Domain.Repositories;
+using SocialNetwork.Models;
 using SocialNetwork.WebApi.SignalR.Hubs;
 using SocialNetwork.WebApi.SignalR.StronglyTypedHubs;
 

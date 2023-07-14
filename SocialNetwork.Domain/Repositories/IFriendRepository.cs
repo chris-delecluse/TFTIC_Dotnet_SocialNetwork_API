@@ -1,6 +1,6 @@
 using SocialNetwork.Domain.Commands.Friend;
-using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Queries.Friend;
+using SocialNetwork.Models;
 using SocialNetwork.Tools.Cqs.Commands;
 using SocialNetwork.Tools.Cqs.Queries;
 
