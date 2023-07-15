@@ -4,6 +4,7 @@ using SocialNetwork.Domain.Commands.Like;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
+using SocialNetwork.WebApi.Models;
 using SocialNetwork.WebApi.Models.Forms.Like;
 
 namespace SocialNetwork.WebApi.Controllers;
@@ -22,11 +23,11 @@ public class LikeController : ControllerBase
     public IActionResult Add(LikeForm form)
     {
         CqsResult result =
-            _likeService.Execute(new LikeCommand(form.PostId, HttpContext.ExtractDataFromToken<int>("Id")));
+            _likeService.Execute(new LikeCommand(form.PostId, HttpContext.ExtractDataFromToken().Id));
 
         if (result.IsFailure) 
-            return BadRequest(new { result.Message });
+            return BadRequest(new ApiResponse(400, false, result.Message));
 
-        return Created("", new { Message = "Like added successfully." });
+        return Created("", new ApiResponse(201, true, "Like added successfully."));
     }
 }

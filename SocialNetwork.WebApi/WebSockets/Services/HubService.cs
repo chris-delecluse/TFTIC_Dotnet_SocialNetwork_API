@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Domain.Queries.Friend;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
+using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.WebSockets.StronglyTypedHubs;
 using SocialNetwork.WebApi.WebSockets.Hubs;
 
@@ -33,40 +34,40 @@ public class HubService : IHubService
         _friendService = friendService;
     }
 
-    public void NotifyUserConnectionToFriends(UserEntity user)
+    public void NotifyUserConnectedToFriends(UserEntity user)
     {
-        foreach (FriendEntity friend in GetUserFriendList(user.Id))
-        {
-            if (friend.ResponderId != user.Id)
-            {
-                NotifyGroup("FriendsGroup",
-                    friend.ResponderId,
-                    $"{user.FirstName} {user.Lastname} has connected.",
-                    _authHub
-                );
-            }
-        }
+        ExecuteActionOnFriendList(new UserInfo(user.Id, user.FirstName, user.LastName),
+            (friend, userFullName) => SendGroupMessage("FriendsGroup",
+                friend.ResponderId,
+                $"{userFullName} has connected.",
+                _authHub
+            )
+        );
     }
 
-    public void NotifyUserDisConnectionToFriends(int id, string firstName, string lastName)
+    public void NotifyUserDisConnectedToFriends(UserInfo user)
     {
-        foreach (FriendEntity friend in GetUserFriendList(id))
-        {
-            if (friend.ResponderId != id)
-            {
-                NotifyGroup("FriendsGroup",
-                    friend.ResponderId,
-                    $"{firstName} {lastName} has disconnected.",
-                    _authHub
-                );
-            }
-        }
+        ExecuteActionOnFriendList(user,
+            (friend, userFullName) => SendGroupMessage("FriendsGroup",
+                friend.ResponderId,
+                $"{userFullName} has disconnected.",
+                _authHub
+            )
+        );
     }
 
-    private IEnumerable<FriendEntity> GetUserFriendList(int id) =>
-        _friendService.Execute(new FriendListByStateQuery(id, EFriendState.Accepted));
+    public void NotifyNewPostToFriends(UserInfo user, int postId)
+    {
+        throw new NotImplementedException();
+    }
 
-    private void NotifyGroup<THub>(string groupName, string message, IHubContext<THub, IHub> hubContext)
+    private void SendGroupMessage<THub>(string groupName, int targetId, string message, IHubContext<THub, IHub> hubContext)
+        where THub : Hub<IHub>
+    {
+        SendGroupMessage($"{groupName}_{targetId}", message, hubContext);
+    }
+
+    private void SendGroupMessage<THub>(string groupName, string message, IHubContext<THub, IHub> hubContext)
         where THub : Hub<IHub>
     {
         hubContext.Clients.Group(groupName)
@@ -76,7 +77,16 @@ public class HubService : IHubService
             .ReceiveMessage(message);
     }
 
-    private void NotifyGroup<THub>(string groupName, int targetId, string message, IHubContext<THub, IHub> hubContext)
-        where THub : Hub<IHub> =>
-        NotifyGroup($"{groupName}_{targetId}", message, hubContext);
+    private IEnumerable<FriendEntity> GetUserFriendList(int id)
+    {
+        return _friendService.Execute(new FriendListByStateQuery(id, EFriendState.Accepted));
+    }
+
+    private void ExecuteActionOnFriendList(UserInfo user, Action<FriendEntity, string> predicate)
+    {
+        foreach (FriendEntity friend in GetUserFriendList(user.Id))
+        {
+            predicate(friend, $"{user.FirstName} {user.LastName}");
+        }
+    }
 }

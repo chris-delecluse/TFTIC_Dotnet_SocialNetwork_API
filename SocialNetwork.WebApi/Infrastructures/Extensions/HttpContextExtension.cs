@@ -1,14 +1,15 @@
 using System.Security.Claims;
+using SocialNetwork.WebApi.Infrastructures.Security;
 
 namespace SocialNetwork.WebApi.Infrastructures.Extensions;
 
 internal static class HttpContextServiceExtension
 {
-    internal static T? ExtractDataFromToken<T>(this HttpContext httpContext, string claimName)
+    internal static UserInfo ExtractDataFromToken(this HttpContext httpContext)
     {
-        if (typeof(T) == typeof(int)) 
-            return (T)(object)int.Parse(httpContext.User.Claims.FirstOrDefault(c => c.Type == claimName)!.Value);
-        
-        return (T?)(object?)httpContext.User.FindFirstValue(claimName);
+        return new UserInfo(int.Parse(httpContext.User.FindFirstValue("Id")),
+            httpContext.User.FindFirstValue(ClaimTypes.GivenName),
+            httpContext.User.FindFirstValue(ClaimTypes.Surname)
+        );
     }
 }

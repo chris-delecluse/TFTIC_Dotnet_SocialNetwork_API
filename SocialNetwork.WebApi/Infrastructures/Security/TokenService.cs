@@ -22,7 +22,7 @@ public class TokenService : ITokenService
             .AddAudience(_configuration.GetValue<string>("Jwt:Audience")!)
             .AddClaim("Id", user.Id.ToString())
             .AddClaim(JwtRegisteredClaimNames.GivenName, user.FirstName)
-            .AddClaim(JwtRegisteredClaimNames.FamilyName, user.Lastname)
+            .AddClaim(JwtRegisteredClaimNames.FamilyName, user.LastName)
             .AddClaim(JwtRegisteredClaimNames.Email, user.Email)
             .AddClaim(JwtRegisteredClaimNames.Sub, "social network api by diwa")
             .AddClaim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())

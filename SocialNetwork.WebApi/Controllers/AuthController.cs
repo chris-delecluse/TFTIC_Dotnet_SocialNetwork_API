@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Commands.Auth;
@@ -9,6 +8,7 @@ using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
+using SocialNetwork.WebApi.Models;
 using SocialNetwork.WebApi.Models.Forms.Auth;
 using SocialNetwork.WebApi.Models.Mappers;
 using SocialNetwork.WebApi.WebSockets.Services;
@@ -44,9 +44,9 @@ public class AuthController : ControllerBase
         );
 
         if (result.IsFailure) 
-            return BadRequest(new { result.Message });
+            return BadRequest(new ApiResponse(400, false, result.Message));
 
-        return Created("", new { Message = "User created successfully." });
+        return Created("", new ApiResponse(201, true, "User created successfully."));
     }
 
     [HttpPost, Route("local/login"), AllowAnonymous]
@@ -55,25 +55,27 @@ public class AuthController : ControllerBase
         UserEntity? user = _authService.Execute(new LoginQuery(form.Email, form.Password));
 
         if (user is null) 
-            return Unauthorized(new { Message = "Invalid Credentials." });
+            return Unauthorized(new ApiResponse(401, false, "Invalid Credentials."));
 
         _connectionState.AddUserToConnectedList(user.Id);
-        _hubService.NotifyUserConnectionToFriends(user);
+        _hubService.NotifyUserConnectedToFriends(user);
 
-        return Ok(user.ToLoginDto(_tokenService.GenerateAccessToken(user)));
+        return Ok(new ApiResponse(200,
+                true,
+                user.ToLoginDto(_tokenService.GenerateAccessToken(user)),
+                "Success"
+            )
+        );
     }
 
     [HttpPost, Route("local/logout"), Authorize]
     public IActionResult Logout()
     {
-        int userId = HttpContext.ExtractDataFromToken<int>("Id");
-        
-        _connectionState.RemoveUserToConnectedList(userId);
-        _hubService.NotifyUserDisConnectionToFriends(userId,
-            HttpContext.ExtractDataFromToken<string>(ClaimTypes.GivenName),
-            HttpContext.ExtractDataFromToken<string>(ClaimTypes.Surname)
-        );
-        
-        return Ok(new { Message = "User logout successfully." });
+        UserInfo user = HttpContext.ExtractDataFromToken();
+
+        _connectionState.RemoveUserToConnectedList(user.Id);
+        _hubService.NotifyUserDisConnectedToFriends(user);
+
+        return Ok(new ApiResponse(200, true, "User logout successfully."));
     }
 }
