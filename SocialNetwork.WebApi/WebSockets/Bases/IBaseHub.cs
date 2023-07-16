@@ -1,6 +1,6 @@
-namespace SocialNetwork.WebApi.WebSockets.StronglyTypedHubs;
+namespace SocialNetwork.WebApi.WebSockets.Bases;
 
-public interface IHub
+public interface IBaseHub
 {
     Task ReceiveMessage(string message);
     Task JoinGroup(string groupName);

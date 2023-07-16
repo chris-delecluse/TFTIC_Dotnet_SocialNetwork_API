@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.WebApi.WebSockets.StronglyTypedHubs;
+using SocialNetwork.WebApi.WebSockets.Bases;
 
 namespace SocialNetwork.WebApi.WebSockets.Hubs;
 
-public class AuthHub : Hub<IHub>
+public class AuthHub : Hub<IBaseHub>
 {
     [HubMethodName("JoinGroup")]
     public async Task JoinGroup(string groupName)

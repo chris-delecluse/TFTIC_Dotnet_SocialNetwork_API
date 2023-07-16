@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.WebApi.WebSockets.StronglyTypedHubs;
+using SocialNetwork.WebApi.WebSockets.Bases;
 
 namespace SocialNetwork.WebApi.WebSockets.Hubs;
 
-public class CommentHub : Hub<IHub> { }
+public class CommentHub : Hub<IBaseHub> { }

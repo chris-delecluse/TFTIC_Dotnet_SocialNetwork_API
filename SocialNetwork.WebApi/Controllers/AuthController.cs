@@ -11,7 +11,7 @@ using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Models;
 using SocialNetwork.WebApi.Models.Forms.Auth;
 using SocialNetwork.WebApi.Models.Mappers;
-using SocialNetwork.WebApi.WebSockets.Services;
+using SocialNetwork.WebApi.WebSockets.Interfaces;
 
 namespace SocialNetwork.WebApi.Controllers;
 
@@ -21,19 +21,19 @@ public class AuthController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly IAuthRepository _authService;
     private readonly IUserConnectionState _connectionState;
-    private readonly IHubService _hubService;
+    private readonly IAuthHubService _authHubService;
 
     public AuthController(
         ITokenService tokenService,
         IAuthRepository authService,
         IUserConnectionState connectionState,
-        IHubService hubService
+        IAuthHubService authHubService
     )
     {
         _tokenService = tokenService;
         _authService = authService;
         _connectionState = connectionState;
-        _hubService = hubService;
+        _authHubService = authHubService;
     }
 
     [HttpPost, Route("local/register"), AllowAnonymous]
@@ -58,7 +58,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new ApiResponse(401, false, "Invalid Credentials."));
 
         _connectionState.AddUserToConnectedList(user.Id);
-        _hubService.NotifyUserConnectedToFriends(user);
+        _authHubService.NotifyUserConnectedToFriends(user);
 
         return Ok(new ApiResponse(200,
                 true,
@@ -74,7 +74,7 @@ public class AuthController : ControllerBase
         UserInfo user = HttpContext.ExtractDataFromToken();
 
         _connectionState.RemoveUserToConnectedList(user.Id);
-        _hubService.NotifyUserDisConnectedToFriends(user);
+        _authHubService.NotifyUserDisConnectedToFriends(user);
 
         return Ok(new ApiResponse(200, true, "User logout successfully."));
     }

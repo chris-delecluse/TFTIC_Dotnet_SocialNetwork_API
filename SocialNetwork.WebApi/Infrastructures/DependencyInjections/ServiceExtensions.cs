@@ -8,6 +8,7 @@ using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Domain.Services;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.WebSockets.Interfaces;
 using SocialNetwork.WebApi.WebSockets.Services;
 
 namespace SocialNetwork.WebApi.Infrastructures.DependencyInjections;
@@ -19,7 +20,8 @@ internal static class ServiceExtensions
         service.AddSingleton<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("Default")));
         service.AddSingleton<IUserConnectionState, UserConnectionState>();
         
-        service.AddScoped<IHubService, HubService>();
+        service.AddScoped<IAuthHubService, AuthHubService>();
+        service.AddScoped<IPostHubService, PostHubService>();
 
         service.AddScoped<ITokenService, TokenService>();
         service.AddScoped<IAuthRepository, AuthService>();

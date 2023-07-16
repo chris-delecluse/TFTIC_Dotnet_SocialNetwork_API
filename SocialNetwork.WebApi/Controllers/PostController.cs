@@ -6,9 +6,11 @@ using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
 using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
+using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.Models;
 using SocialNetwork.WebApi.Models.Forms.Post;
 using SocialNetwork.WebApi.Models.Mappers;
+using SocialNetwork.WebApi.WebSockets.Interfaces;
 
 namespace SocialNetwork.WebApi.Controllers;
 
@@ -16,10 +18,12 @@ namespace SocialNetwork.WebApi.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostRepository _postService;
+    private readonly IPostHubService _hubService;
 
-    public PostController(IPostRepository postService)
+    public PostController(IPostRepository postService, IPostHubService hubService)
     {
         _postService = postService;
+        _hubService = hubService;
     }
 
     [HttpPost]
@@ -30,6 +34,8 @@ public class PostController : ControllerBase
 
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));
+        
+        _hubService.NotifyNewPostToFriends(HttpContext.ExtractDataFromToken());
 
         return Created("", new ApiResponse(201, true, "Post Added successfully."));
     }
