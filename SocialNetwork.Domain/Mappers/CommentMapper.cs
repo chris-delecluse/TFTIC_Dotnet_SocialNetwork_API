@@ -12,4 +12,6 @@ internal static class CommentMapper
             (int)record["postId"],
             (int)record["userId"]
         );
+
+    internal static int ToCommentUserId(this IDataRecord record) => (int)record["userId"];
 }

@@ -1,5 +1,7 @@
 using System.Data;
 using SocialNetwork.Domain.Commands.Comment;
+using SocialNetwork.Domain.Mappers;
+using SocialNetwork.Domain.Queries.Comment;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Ado;
 using SocialNetwork.Tools.Cqs.Shared;
@@ -19,7 +21,8 @@ public class CommentService : ICommentRepository
     {
         try
         {
-            if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+            if (_dbConnection.State is not ConnectionState.Open)
+                _dbConnection.Open();
 
             _dbConnection.ExecuteNonQuery("CSP_AddComment", true, command);
 
@@ -30,5 +33,21 @@ public class CommentService : ICommentRepository
         {
             return CqsResult.Failure(e.Message);
         }
+    }
+
+    public IEnumerable<int> Execute(CommentUserIdListByPostIdQuery query)
+    {
+        if (_dbConnection.State is not ConnectionState.Open)
+            _dbConnection.Open();
+
+        IEnumerable<int> userIds = _dbConnection.ExecuteReader("CSP_GetUserIdsFromCommentByPostId",
+                record => record.ToCommentUserId(),
+                true,
+                query
+            )
+            .ToList();
+
+        _dbConnection.Close();
+        return userIds;
     }
 }

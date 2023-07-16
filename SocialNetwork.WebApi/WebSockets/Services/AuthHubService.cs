@@ -8,7 +8,7 @@ using SocialNetwork.WebApi.WebSockets.Interfaces;
 
 namespace SocialNetwork.WebApi.WebSockets.Services;
 
-public class AuthHubService : HubTools, IAuthHubService
+public class AuthHubService : FriendHubTools, IAuthHubService
 {
     private readonly IHubContext<AuthHub, IBaseHub> _authContext;
 

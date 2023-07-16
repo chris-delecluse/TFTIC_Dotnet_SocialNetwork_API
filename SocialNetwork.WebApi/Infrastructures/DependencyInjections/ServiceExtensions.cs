@@ -22,6 +22,7 @@ internal static class ServiceExtensions
         
         service.AddScoped<IAuthHubService, AuthHubService>();
         service.AddScoped<IPostHubService, PostHubService>();
+        service.AddScoped<ICommentHubService, CommentHubService>();
 
         service.AddScoped<ITokenService, TokenService>();
         service.AddScoped<IAuthRepository, AuthService>();

@@ -7,7 +7,7 @@ using SocialNetwork.WebApi.WebSockets.Interfaces;
 
 namespace SocialNetwork.WebApi.WebSockets.Services;
 
-public class PostHubService : HubTools, IPostHubService
+public class PostHubService : FriendHubTools, IPostHubService
 {
     private readonly IHubContext<PostHub, IBaseHub> _hubContext;
 

@@ -6,6 +6,7 @@ using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Models;
 using SocialNetwork.WebApi.Models.Forms.Comment;
+using SocialNetwork.WebApi.WebSockets.Interfaces;
 
 namespace SocialNetwork.WebApi.Controllers;
 
@@ -13,10 +14,12 @@ namespace SocialNetwork.WebApi.Controllers;
 public class CommentController : ControllerBase
 {
     private readonly ICommentRepository _commentService;
+    private readonly ICommentHubService _commentHubService;
 
-    public CommentController(ICommentRepository commentService)
+    public CommentController(ICommentRepository commentService, ICommentHubService commentHubService)
     {
         _commentService = commentService;
+        _commentHubService = commentHubService;
     }
 
     [HttpPost]
@@ -30,6 +33,8 @@ public class CommentController : ControllerBase
 
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));
+        
+        _commentHubService.Notify(HttpContext.ExtractDataFromToken(), form.PostId);
 
         return Created("", new ApiResponse(201, true, "Comment created successfully."));
     }
