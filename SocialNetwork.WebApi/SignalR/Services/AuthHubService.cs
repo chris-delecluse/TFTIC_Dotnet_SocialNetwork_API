@@ -19,23 +19,23 @@ public class AuthHubService : FriendListHubTools, IAuthHubService
         _authContext = authContext;
     }
 
-    public void NotifyUserConnectedToFriends(UserEntity user)
+    public async Task NotifyUserConnectedToFriends(UserEntity user)
     {
         foreach (FriendEntity friend in GetUserFriendList(user.Id))
         {
             string groupName = $"FriendsGroup_{friend.ResponderId}";
-            _authContext?.AddToGroup(groupName);
-            _authContext?.SendMessage(groupName, $"{user.FirstName} {user.LastName} has connected !");
+            await _authContext.AddToGroup(groupName);
+            await _authContext.SendMessage(groupName, $"{user.FirstName} {user.LastName} has connected !");
         }
     }
 
-    public void NotifyUserDisConnectedToFriends(UserInfo user)
+    public async Task NotifyUserDisConnectedToFriends(UserInfo user)
     {
         foreach (FriendEntity friend in GetUserFriendList(user.Id))
         {
             string groupName = $"FriendsGroup_{friend.ResponderId}";
-            _authContext?.SendMessage(groupName, $"{user.FirstName} {user.LastName} has disconnected !");
-            _authContext?.RemoveToGroup(groupName);
+            await _authContext.SendMessage(groupName, $"{user.FirstName} {user.LastName} has disconnected !");
+            await _authContext.RemoveToGroup(groupName);
         }
     }
 }

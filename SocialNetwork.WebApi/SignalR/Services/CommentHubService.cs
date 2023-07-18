@@ -21,13 +21,13 @@ public class CommentHubService : ICommentHubService
         _postContext = postContext;
     }
 
-    public void NotifyNewCommentToPost<T>(UserInfo user, int postId, T dataToSend)
+    public async Task NotifyNewCommentToPost<T>(UserInfo user, int postId, T dataToSend)
     {
         foreach (int targetUserId in GetUserIdsFromCommentBasedOnPostId(postId))
         {
             string groupName = $"CommentGroup_{targetUserId}";
-            _postContext?.AddToGroup(groupName);
-            _postContext?.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
+            await _postContext.AddToGroup(groupName);
+            await _postContext.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
         }
     }
 

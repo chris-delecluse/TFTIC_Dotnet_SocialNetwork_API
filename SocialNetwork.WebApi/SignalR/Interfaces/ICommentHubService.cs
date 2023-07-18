@@ -4,5 +4,5 @@ namespace SocialNetwork.WebApi.SignalR.Interfaces;
 
 public interface ICommentHubService
 {
-    void NotifyNewCommentToPost<T>(UserInfo user, int postId, T dataToSend);
+    Task NotifyNewCommentToPost<T>(UserInfo user, int postId, T dataToSend);
 }

@@ -20,13 +20,13 @@ public class PostHubService : FriendListHubTools, IPostHubService
         _hubContext = hubContext;
     }
 
-    public void NotifyNewPostToFriends<T>(UserInfo user, T dataToSend)
+    public async Task NotifyNewPostToFriends<T>(UserInfo user, T dataToSend)
     {
         foreach (FriendEntity friend in GetUserFriendList(user.Id))
         {
             string groupName = $"PostGroup_{friend.ResponderId}";
-            _hubContext?.AddToGroup(groupName);
-            _hubContext?.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
+            await _hubContext.AddToGroup(groupName);
+            await _hubContext.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
         }
     }
 }

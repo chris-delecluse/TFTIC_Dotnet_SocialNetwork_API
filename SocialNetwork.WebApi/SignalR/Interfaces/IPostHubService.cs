@@ -4,5 +4,5 @@ namespace SocialNetwork.WebApi.SignalR.Interfaces;
 
 public interface IPostHubService
 {
-    void NotifyNewPostToFriends<T>(UserInfo user, T dataToSend);
+    Task NotifyNewPostToFriends<T>(UserInfo user, T dataToSend);
 }
