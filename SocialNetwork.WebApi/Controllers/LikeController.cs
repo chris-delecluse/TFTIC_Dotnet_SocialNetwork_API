@@ -4,6 +4,7 @@ using SocialNetwork.Domain.Commands.Like;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
+using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.Models;
 using SocialNetwork.WebApi.Models.Forms.Like;
 
@@ -22,8 +23,8 @@ public class LikeController : ControllerBase
     [HttpPost]
     public IActionResult Add(LikeForm form)
     {
-        CqsResult result =
-            _likeService.Execute(new LikeCommand(form.PostId, HttpContext.ExtractDataFromToken().Id));
+        UserInfo user = HttpContext.ExtractDataFromToken();
+        ICommandResult result = _likeService.Execute(new LikeCommand(form.PostId, user.Id));
 
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));

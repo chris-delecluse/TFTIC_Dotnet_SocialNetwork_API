@@ -9,4 +9,6 @@ as
 begin
     insert into [Likes](postId, userId)
     values (@postId, @userId)
+
+    select SCOPE_IDENTITY()
 end

@@ -17,7 +17,7 @@ public class AuthService : IAuthRepository
         _dbConnection = dbConnection;
     }
 
-    public CqsResult Execute(RegisterCommand command)
+    public ICommandResult Execute(RegisterCommand command)
     {
         try
         {
@@ -27,11 +27,11 @@ public class AuthService : IAuthRepository
             _dbConnection.ExecuteNonQuery("CSP_Register", true, command);
 
             _dbConnection.Close();
-            return CqsResult.Success();
+            return ICommandResult.Success();
         }
         catch (Exception)
         {
-            return CqsResult.Failure($"{nameof(command.Email)} is already used.");
+            return ICommandResult.Failure($"{nameof(command.Email)} is already used.");
         }
     }
 

@@ -8,8 +8,8 @@ using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Domain.Services;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.Security;
-using SocialNetwork.WebApi.WebSockets.Interfaces;
-using SocialNetwork.WebApi.WebSockets.Services;
+using SocialNetwork.WebApi.SignalR.Interfaces;
+using SocialNetwork.WebApi.SignalR.Services;
 
 namespace SocialNetwork.WebApi.Infrastructures.DependencyInjections;
 
@@ -35,8 +35,7 @@ internal static class ServiceExtensions
         
         service.AddCors(options =>
         {
-            options.AddDefaultPolicy(
-                builder =>
+            options.AddDefaultPolicy(builder =>
                 {
                     builder.WithOrigins("http://localhost:63343")
                         .AllowAnyHeader()

@@ -10,4 +10,6 @@ as
 begin
     insert into [Friends] (requestId, responderId, state)
     values (@requestId, @responderId, @state)
+
+    select SCOPE_IDENTITY()
 end

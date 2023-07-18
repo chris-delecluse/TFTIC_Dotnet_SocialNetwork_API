@@ -8,9 +8,10 @@ using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.Models;
+using SocialNetwork.WebApi.Models.Dtos.Post;
 using SocialNetwork.WebApi.Models.Forms.Post;
 using SocialNetwork.WebApi.Models.Mappers;
-using SocialNetwork.WebApi.WebSockets.Interfaces;
+using SocialNetwork.WebApi.SignalR.Interfaces;
 
 namespace SocialNetwork.WebApi.Controllers;
 
@@ -29,37 +30,30 @@ public class PostController : ControllerBase
     [HttpPost]
     public IActionResult Add(PostForm form)
     {
-        CqsResult result =
-            _postService.Execute(new PostCommand(form.Content, HttpContext.ExtractDataFromToken().Id));
+        UserInfo user = HttpContext.ExtractDataFromToken();
+        ICommandResult<int> result = _postService.Execute(new PostCommand(form.Content, user.Id));
+        object hubMessage = new { Id = result.Result, form.Content };
 
-        if (result.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, result.Message));
-        
-        _hubService.NotifyNewPostToFriends(HttpContext.ExtractDataFromToken());
+        if (result.IsFailure) return BadRequest(new ApiResponse(400, false, result.Message));
 
+        _hubService.NotifyNewPostToFriends(user, hubMessage);
         return Created("", new ApiResponse(201, true, "Post Added successfully."));
     }
 
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(new ApiResponse(200,
-                true,
-                _postService
-                    .Execute(new AllPostQuery(HttpContext.ExtractDataFromToken().Id))
-                    .ToPostDto(),
-                "Success"
-            )
-        );
+        UserInfo user = HttpContext.ExtractDataFromToken();
+        IEnumerable<PostEntity> posts = _postService.Execute(new AllPostQuery(user.Id));
+
+        return Ok(new ApiResponse(200, true, posts.ToPostDto(), "Success"));
     }
 
     [HttpGet("{id}")]
     public IActionResult Get(int id)
     {
-        PostEntity? post = _postService.Execute(new PostQuery(id,
-                HttpContext.ExtractDataFromToken().Id
-            )
-        );
+        UserInfo user = HttpContext.ExtractDataFromToken();
+        PostEntity? post = _postService.Execute(new PostQuery(id, user.Id));
 
         if (post is null) 
             return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));

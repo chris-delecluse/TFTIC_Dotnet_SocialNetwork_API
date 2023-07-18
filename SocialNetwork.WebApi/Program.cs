@@ -1,5 +1,5 @@
 using SocialNetwork.WebApi.Infrastructures.DependencyInjections;
-using SocialNetwork.WebApi.WebSockets.Hubs;
+using SocialNetwork.WebApi.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.

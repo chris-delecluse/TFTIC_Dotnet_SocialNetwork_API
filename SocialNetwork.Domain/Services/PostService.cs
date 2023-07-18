@@ -13,37 +13,29 @@ public class PostService : IPostRepository
 {
     private readonly IDbConnection _dbConnection;
 
-    public PostService(IDbConnection dbConnection)
-    {
-        _dbConnection = dbConnection;
-    }
+    public PostService(IDbConnection dbConnection) => _dbConnection = dbConnection;
 
-    public CqsResult Execute(PostCommand command)
+    public ICommandResult<int> Execute(PostCommand command)
     {
         try
         {
-            if (_dbConnection.State is not ConnectionState.Open)
-                _dbConnection.Open();
+            if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
-            _dbConnection.ExecuteNonQuery("CSP_AddPost", true, command);
+            int postId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddPost", true, command));
 
             _dbConnection.Close();
-            return CqsResult.Success();
+            return ICommandResult<int>.Success(postId);
         }
-        catch (Exception e)
-        {
-            return CqsResult.Failure(e.Message);
-        }
+        catch (Exception e) { return ICommandResult<int>.Failure(e.Message); }
     }
 
     public IEnumerable<PostEntity> Execute(AllPostQuery query)
     {
-        if (_dbConnection.State is not ConnectionState.Open) 
-            _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
         IEnumerable<PostEntity> posts = _dbConnection
-                .ExecuteReader("CSP_GetAllPostByUserId", record => record.ToPost(), true, query)
-                .ToList();
+            .ExecuteReader("CSP_GetAllPostByUserId", record => record.ToPost(), true, query)
+            .ToList();
 
         _dbConnection.Close();
         return posts;
@@ -51,8 +43,7 @@ public class PostService : IPostRepository
 
     public PostEntity? Execute(PostQuery query)
     {
-        if (_dbConnection.State is not ConnectionState.Open) 
-            _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
         PostEntity? post = _dbConnection
             .ExecuteReader("CSP_GetPostByUserId", record => record.ToPost(), true, query)

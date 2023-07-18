@@ -1,7 +1,7 @@
 using SocialNetwork.Models;
 using SocialNetwork.WebApi.Infrastructures.Security;
 
-namespace SocialNetwork.WebApi.WebSockets.Interfaces;
+namespace SocialNetwork.WebApi.SignalR.Interfaces;
 
 public interface IAuthHubService
 {

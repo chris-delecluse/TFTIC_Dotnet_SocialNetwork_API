@@ -17,21 +17,21 @@ public class CommentService : ICommentRepository
         _dbConnection = dbConnection;
     }
 
-    public CqsResult Execute(CommentCommand command)
+    public ICommandResult<int> Execute(CommentCommand command)
     {
         try
         {
             if (_dbConnection.State is not ConnectionState.Open)
                 _dbConnection.Open();
 
-            _dbConnection.ExecuteNonQuery("CSP_AddComment", true, command);
+            int commentId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddComment", true, command));
 
             _dbConnection.Close();
-            return CqsResult.Success();
+            return ICommandResult<int>.Success(commentId);
         }
         catch (Exception e)
         {
-            return CqsResult.Failure(e.Message);
+            return ICommandResult<int>.Failure(e.Message);
         }
     }
 

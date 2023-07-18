@@ -18,10 +18,10 @@ public class FriendService : IFriendRepository
         _dbConnection = dbConnection;
     }
 
-    public CqsResult Execute(FriendCommand command)
+    public ICommandResult Execute(FriendCommand command)
     {
         if (command.ResponderId <= 0)
-            return CqsResult.Failure("The user request to befriend (for 'responderId') cannot be less than or equal to 0.");
+            return ICommandResult.Failure("The user request to befriend (for 'responderId') cannot be less than or equal to 0.");
 
         try
         {
@@ -39,15 +39,15 @@ public class FriendService : IFriendRepository
             );
 
             _dbConnection.Close();
-            return CqsResult.Success();
+            return ICommandResult.Success();
         }
         catch (Exception e)
         {
-            return CqsResult.Failure(e.Message);
+            return ICommandResult.Failure(e.Message);
         }
     }
 
-    public CqsResult Execute(UpdateFriendStateCommand command)
+    public ICommandResult Execute(UpdateFriendStateCommand command)
     {
         try
         {
@@ -68,11 +68,11 @@ public class FriendService : IFriendRepository
                 AddFriendsToEachOther(command.ResponderId, command.RequestId);
 
             _dbConnection.Close();
-            return CqsResult.Success();
+            return ICommandResult.Success();
         }
         catch (Exception e)
         {
-            return CqsResult.Failure(e.Message);
+            return ICommandResult.Failure(e.Message);
         }
     }
 

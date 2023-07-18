@@ -8,5 +8,7 @@ create procedure [dbo].[CSP_AddPost](
 as
 begin
     insert into [Posts] (content, userId)
-    values (@content, @userId)
+    values (@content, @userId) 
+    
+    select SCOPE_IDENTITY()
 end

@@ -7,6 +7,6 @@ using SocialNetwork.Tools.Cqs.Queries;
 namespace SocialNetwork.Domain.Repositories;
 
 public interface IPostRepository :
-    ICommandHandler<PostCommand>,
+    ICommandHandler<PostCommand, int>,
     IQueryHandler<AllPostQuery, IEnumerable<PostEntity>>,
     IQueryHandler<PostQuery, PostEntity?> { }

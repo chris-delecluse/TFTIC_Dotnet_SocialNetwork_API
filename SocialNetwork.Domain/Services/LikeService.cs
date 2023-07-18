@@ -15,7 +15,7 @@ public class LikeService: ILikeRepository
         _dbConnection = dbConnection;
     }
 
-    public CqsResult Execute(LikeCommand command)
+    public ICommandResult Execute(LikeCommand command)
     {
         try
         {
@@ -25,15 +25,15 @@ public class LikeService: ILikeRepository
             _dbConnection.ExecuteNonQuery("CSP_AddLike", true, command);
         
             _dbConnection.Close();
-            return CqsResult.Success();
+            return ICommandResult.Success();
         }
         catch (Exception e)
         {
-            return CqsResult.Failure(e.Message);
+            return ICommandResult.Failure(e.Message);
         }
     }
 
-    public CqsResult Execute(DisLikeCommand command)
+    public ICommandResult Execute(DisLikeCommand command)
     {
         throw new NotImplementedException();
     }

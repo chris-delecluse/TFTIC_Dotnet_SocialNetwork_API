@@ -3,13 +3,13 @@ using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
 using SocialNetwork.WebApi.Infrastructures.Security;
 
-namespace SocialNetwork.WebApi.WebSockets.Bases;
+namespace SocialNetwork.WebApi.SignalR.Tools;
 
-public abstract class FriendHubTools : GroupMessageHubTools
+public abstract class FriendListHubTools
 {
     private readonly IFriendRepository _friendService;
 
-    protected FriendHubTools(IFriendRepository friendService)
+    protected FriendListHubTools(IFriendRepository friendService)
     {
         _friendService = friendService;
     }
@@ -17,13 +17,5 @@ public abstract class FriendHubTools : GroupMessageHubTools
     protected IEnumerable<FriendEntity> GetUserFriendList(int id)
     {
         return _friendService.Execute(new FriendListByStateQuery(id, EFriendState.Accepted));
-    }
-
-    protected void ExecuteActionOnFriendList(UserInfo user, Action<FriendEntity, string> predicate)
-    {
-        foreach (FriendEntity friend in GetUserFriendList(user.Id))
-        {
-            predicate(friend, $"{user.FirstName} {user.LastName}");
-        }
     }
 }

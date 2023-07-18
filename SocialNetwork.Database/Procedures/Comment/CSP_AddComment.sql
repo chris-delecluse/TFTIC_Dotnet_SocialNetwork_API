@@ -10,4 +10,6 @@ as
 begin
     insert into [Comments] (content, postId, userId)
     values (@content, @postId, @userId)
+
+    select SCOPE_IDENTITY()
 end

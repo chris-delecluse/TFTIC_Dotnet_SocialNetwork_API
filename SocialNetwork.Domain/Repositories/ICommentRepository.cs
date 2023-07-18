@@ -6,5 +6,5 @@ using SocialNetwork.Tools.Cqs.Queries;
 namespace SocialNetwork.Domain.Repositories;
 
 public interface ICommentRepository :
-    ICommandHandler<CommentCommand>,
+    ICommandHandler<CommentCommand, int>,
     IQueryHandler<CommentUserIdListByPostIdQuery, IEnumerable<int>> { }
