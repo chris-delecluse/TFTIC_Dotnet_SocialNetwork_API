@@ -39,7 +39,7 @@ public class FriendController : ControllerBase
     public IActionResult Get()
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
-        IEnumerable<FriendEntity> friends = _friendService.Execute(new FriendListQuery(user.Id));
+        IEnumerable<FriendModel> friends = _friendService.Execute(new FriendListQuery(user.Id));
 
         return Ok(new ApiResponse(200, true, friends.ToFriendDto(), "Success"));
     }

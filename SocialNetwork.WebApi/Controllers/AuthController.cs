@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
     {
         ICommandResult result = _authService.Execute(
             new RegisterCommand(form.FirstName, form.LastName, form.Email, form.Password)
-        );
+        );  
 
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));
@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
     [HttpPost, Route("local/login"), AllowAnonymous]
     public IActionResult Login(LoginForm form)
     {
-        UserEntity? user = _authService.Execute(new LoginQuery(form.Email, form.Password));
+        UserModel? user = _authService.Execute(new LoginQuery(form.Email, form.Password));
 
         if (user is null) 
             return Unauthorized(new ApiResponse(401, false, "Invalid Credentials."));

@@ -3,7 +3,7 @@ using SocialNetwork.Tools.Cqs.Queries;
 
 namespace SocialNetwork.Domain.Queries.Post;
 
-public class PostQuery : IQuery<PostEntity?>
+public class PostQuery : IQuery<Models.PostModel?>
 {
     public int PostId { get; init; }
     public int UserId { get; init; }

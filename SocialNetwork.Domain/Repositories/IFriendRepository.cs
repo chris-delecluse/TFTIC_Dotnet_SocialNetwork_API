@@ -9,5 +9,5 @@ namespace SocialNetwork.Domain.Repositories;
 public interface IFriendRepository :
     ICommandHandler<FriendCommand>,
     ICommandHandler<UpdateFriendStateCommand>,
-    IQueryHandler<FriendListQuery, IEnumerable<FriendEntity>>,
-    IQueryHandler<FriendListByStateQuery, IEnumerable<FriendEntity>> { }
+    IQueryHandler<FriendListQuery, IEnumerable<FriendModel>>,
+    IQueryHandler<FriendListByStateQuery, IEnumerable<FriendModel>> { }

@@ -1,6 +1,6 @@
 namespace SocialNetwork.Models;
 
-public class FriendEntity
+public class FriendModel
 {
     public int Id { get; init; }
     public EFriendState State { get; init; }
@@ -8,7 +8,7 @@ public class FriendEntity
     public int ResponderId { get; init; }
     public DateTime CreatedAt { get; init; }
 
-    public FriendEntity(int id, EFriendState state, int requestId, int responderId, DateTime createdAt)
+    public FriendModel(int id, EFriendState state, int requestId, int responderId, DateTime createdAt)
     {
         Id = id;
         State = state;

@@ -5,7 +5,7 @@ namespace SocialNetwork.Domain.Mappers;
 
 internal static class UserMapper
 {
-    internal static UserEntity ToPublicUser(this IDataRecord record) =>
+    internal static UserModel ToPublicUser(this IDataRecord record) =>
         new((int)record["id"],
             (string)record["firstname"],
             (string)record["lastname"],

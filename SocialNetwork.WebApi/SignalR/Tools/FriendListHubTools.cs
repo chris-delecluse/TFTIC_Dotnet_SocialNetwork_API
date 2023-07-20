@@ -14,7 +14,7 @@ public abstract class FriendListHubTools
         _friendService = friendService;
     }
 
-    protected IEnumerable<FriendEntity> GetUserFriendList(int id)
+    protected IEnumerable<FriendModel> GetUserFriendList(int id)
     {
         return _friendService.Execute(new FriendListByStateQuery(id, EFriendState.Accepted));
     }

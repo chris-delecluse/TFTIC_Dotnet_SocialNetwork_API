@@ -5,6 +5,6 @@ namespace SocialNetwork.WebApi.SignalR.Interfaces;
 
 public interface IAuthHubService
 {
-    Task NotifyUserConnectedToFriends(UserEntity user);
+    Task NotifyUserConnectedToFriends(UserModel userModel);
     Task NotifyUserDisConnectedToFriends(UserInfo user);
 }

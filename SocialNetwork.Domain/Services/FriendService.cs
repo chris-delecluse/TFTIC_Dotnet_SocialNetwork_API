@@ -76,12 +76,12 @@ public class FriendService : IFriendRepository
         }
     }
 
-    public IEnumerable<FriendEntity> Execute(FriendListQuery query)
+    public IEnumerable<FriendModel> Execute(FriendListQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open)
             _dbConnection.Open();
 
-        IEnumerable<FriendEntity> friendList = _dbConnection
+        IEnumerable<FriendModel> friendList = _dbConnection
             .ExecuteReader("CSP_GetFriendList", record => record.ToFriend(), true, query)
             .ToList();
 
@@ -89,12 +89,12 @@ public class FriendService : IFriendRepository
         return friendList;
     }
 
-    public IEnumerable<FriendEntity> Execute(FriendListByStateQuery query)
+    public IEnumerable<FriendModel> Execute(FriendListByStateQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open) 
             _dbConnection.Open();
 
-        IEnumerable<FriendEntity> friendList = _dbConnection
+        IEnumerable<FriendModel> friendList = _dbConnection
             .ExecuteReader("CSP_GetFriendListByState",
                 record => record.ToFriend(),
                 true,

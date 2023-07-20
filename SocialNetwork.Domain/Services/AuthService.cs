@@ -35,12 +35,12 @@ public class AuthService : IAuthRepository
         }
     }
 
-    public UserEntity? Execute(LoginQuery query)
+    public UserModel? Execute(LoginQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open)
             _dbConnection.Open();
 
-        UserEntity? user = _dbConnection
+        UserModel? user = _dbConnection
             .ExecuteReader("CSP_Login", record => record.ToPublicUser(), true, query)
             .FirstOrDefault();
 

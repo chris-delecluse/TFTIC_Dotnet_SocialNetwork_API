@@ -4,5 +4,5 @@ namespace SocialNetwork.WebApi.Infrastructures.Security;
 
 public interface ITokenService
 {
-    string GenerateAccessToken(UserEntity user);
+    string GenerateAccessToken(UserModel userModel);
 }

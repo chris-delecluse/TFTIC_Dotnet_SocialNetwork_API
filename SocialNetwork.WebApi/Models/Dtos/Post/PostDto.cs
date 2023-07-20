@@ -4,14 +4,14 @@ public class PostDto
 {
     public int Id { get; init; }
     public string Content { get; init; }
-    public DateTime CreatedAt { get; init; }
     public int UserId { get; init; }
+    public DateTime? CreatedAt { get; init; }
 
-    public PostDto(int id, string content, DateTime createdAt, int userId)
+    public PostDto(int id, string content, int userId, DateTime? createdAt)
     {
         Id = id;
         Content = content;
-        CreatedAt = createdAt;
         UserId = userId;
+        CreatedAt = createdAt;
     }
 }

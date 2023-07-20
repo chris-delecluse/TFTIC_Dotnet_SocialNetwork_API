@@ -22,7 +22,7 @@ public class PostHubService : FriendListHubTools, IPostHubService
 
     public async Task NotifyNewPostToFriends<T>(UserInfo user, T dataToSend)
     {
-        foreach (FriendEntity friend in GetUserFriendList(user.Id))
+        foreach (FriendModel friend in GetUserFriendList(user.Id))
         {
             string groupName = $"PostGroup_{friend.ResponderId}";
             await _hubContext.AddToGroup(groupName);

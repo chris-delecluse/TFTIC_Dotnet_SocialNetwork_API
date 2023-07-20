@@ -3,7 +3,7 @@ using SocialNetwork.Tools.Cqs.Queries;
 
 namespace SocialNetwork.Domain.Queries.Friend;
 
-public class FriendListQuery: IQuery<IEnumerable<FriendEntity>>
+public class FriendListQuery: IQuery<IEnumerable<Models.FriendModel>>
 {
     public int RequestId { get; init; }
 

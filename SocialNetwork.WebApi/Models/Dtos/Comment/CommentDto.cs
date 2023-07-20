@@ -1,17 +1,19 @@
-namespace SocialNetwork.Models;
+namespace SocialNetwork.WebApi.Models.Dtos.Comment;
 
-public class PostEntity
+public class CommentDto
 {
     public int Id { get; init; }
     public string Content { get; init; }
     public DateTime CreatedAt { get; init; }
+    public int PostId { get; init; }
     public int UserId { get; init; }
 
-    public PostEntity(int id, string content, DateTime createdAt, int userId)
+    public CommentDto(int id, string content, DateTime createdAt, int postId, int userId)
     {
         Id = id;
         Content = content;
         CreatedAt = createdAt;
+        PostId = postId;
         UserId = userId;
     }
 }

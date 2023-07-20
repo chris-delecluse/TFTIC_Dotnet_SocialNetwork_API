@@ -29,11 +29,11 @@ public class PostService : IPostRepository
         catch (Exception e) { return ICommandResult<int>.Failure(e.Message); }
     }
 
-    public IEnumerable<PostEntity> Execute(AllPostQuery query)
+    public IEnumerable<PostModel> Execute(AllPostQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
-        IEnumerable<PostEntity> posts = _dbConnection
+        IEnumerable<PostModel> posts = _dbConnection
             .ExecuteReader("CSP_GetAllPostByUserId", record => record.ToPost(), true, query)
             .ToList();
 
@@ -41,15 +41,27 @@ public class PostService : IPostRepository
         return posts;
     }
 
-    public PostEntity? Execute(PostQuery query)
+    public PostModel? Execute(PostQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
-        PostEntity? post = _dbConnection
+        PostModel? post = _dbConnection
             .ExecuteReader("CSP_GetPostByUserId", record => record.ToPost(), true, query)
             .FirstOrDefault();
 
         _dbConnection.Close();
         return post;
+    }
+
+    public IEnumerable<IGrouping<IComment, PostDetailModel>> Execute(AllPostDetailQuery query)
+    {
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+
+        IEnumerable<PostDetailModel> posts =
+            _dbConnection.ExecuteReader("CSP_GetPostsWithDetailsByUserId", record => record.ToPostDetail(), true, query)
+                .ToList();
+
+        _dbConnection.Close();
+        return posts.GroupBy(g => g.Comments);
     }
 }
