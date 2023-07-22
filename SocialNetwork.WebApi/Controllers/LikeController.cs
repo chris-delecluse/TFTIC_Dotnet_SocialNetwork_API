@@ -31,4 +31,10 @@ public class LikeController : ControllerBase
 
         return Created("", new ApiResponse(201, true, "Like added successfully."));
     }
+
+    [HttpDelete("{id}")]
+    public IActionResult Remove(int id)
+    {
+        return NoContent();
+    }
 }

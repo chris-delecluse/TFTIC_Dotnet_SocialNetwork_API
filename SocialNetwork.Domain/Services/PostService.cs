@@ -1,9 +1,6 @@
 using System.Data;
 using SocialNetwork.Domain.Commands.Post;
-using SocialNetwork.Domain.Mappers;
-using SocialNetwork.Domain.Queries.Post;
 using SocialNetwork.Domain.Repositories;
-using SocialNetwork.Models;
 using SocialNetwork.Tools.Ado;
 using SocialNetwork.Tools.Cqs.Shared;
 
@@ -27,29 +24,5 @@ public class PostService : IPostRepository
             return ICommandResult<int>.Success(postId);
         }
         catch (Exception e) { return ICommandResult<int>.Failure(e.Message); }
-    }
-
-    public IEnumerable<PostModel> Execute(AllPostQuery query)
-    {
-        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
-
-        IEnumerable<PostModel> posts = _dbConnection
-            .ExecuteReader("CSP_GetAllPostByUserId", record => record.ToPost(), true, query)
-            .ToList();
-        
-        _dbConnection.Close();
-        return posts;
-    }
-
-    public PostModel? Execute(PostQuery query)
-    {
-        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
-
-        PostModel? post = _dbConnection
-            .ExecuteReader("CSP_GetPostByUserId", record => record.ToPost(), true, query)
-            .FirstOrDefault();
-
-        _dbConnection.Close();
-        return post;
     }
 }

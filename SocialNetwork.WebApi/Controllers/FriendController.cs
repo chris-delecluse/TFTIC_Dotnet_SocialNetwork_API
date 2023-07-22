@@ -59,4 +59,9 @@ public class FriendController : ControllerBase
 
         return Accepted(new ApiResponse(202, true, "Friend request updated successfully."));
     }
+
+    public IActionResult Remove(int id)
+    {
+        return NoContent();
+    }
 }
