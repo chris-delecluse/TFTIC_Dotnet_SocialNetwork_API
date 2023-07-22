@@ -47,32 +47,21 @@ public class PostController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        UserInfo user = HttpContext.ExtractDataFromToken();
-        IEnumerable<PostModel> posts = _postService.Execute(new AllPostQuery(user.Id));
+        IEnumerable<IGrouping<IPost, CommentModel>> postsGroupByComment =
+            _commentService.Execute(new CommentsGroupByPostIdQuery());
 
-        return Ok(new ApiResponse(200, true, posts.ToPostDto(), "Success"));
+        return Ok(new ApiResponse(200, true, postsGroupByComment.ToPostDto()));
     }
 
     [HttpGet("{id}")]
     public IActionResult Get(int id)
     {
-        UserInfo user = HttpContext.ExtractDataFromToken();
-        PostModel? post = _postService.Execute(new PostQuery(id, user.Id));
+        IEnumerable<IGrouping<IPost, CommentModel>> post = 
+            _commentService.Execute(new CommentGroupByPostIdQuery(id)).ToList();
 
-        if (post is null) return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));
+        if (!post.Any()) 
+            return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));
 
-        return Ok(new ApiResponse(200, true, post.ToPostDto(), "Success"));
+        return Ok(new ApiResponse(200, true, post.First().ToPostDto(), "Success"));
     }
-
-    [HttpGet("detail")]
-    public IActionResult GetDetails()
-    {
-        IEnumerable<IGrouping<IPost, CommentModel>> postsGroupByComment =
-            _commentService.Execute(new CommentsGroupByPostIdQuery());
-
-        return Ok(new ApiResponse(200, true, postsGroupByComment.ToPostDetailDto()));
-    }
-
-    [HttpGet("{id}/detail")]
-    public IActionResult GetDetails(int id) { return Ok(); }
 }

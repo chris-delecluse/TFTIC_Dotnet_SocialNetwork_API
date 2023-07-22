@@ -36,7 +36,7 @@ public class PostService : IPostRepository
         IEnumerable<PostModel> posts = _dbConnection
             .ExecuteReader("CSP_GetAllPostByUserId", record => record.ToPost(), true, query)
             .ToList();
-
+        
         _dbConnection.Close();
         return posts;
     }
@@ -51,17 +51,5 @@ public class PostService : IPostRepository
 
         _dbConnection.Close();
         return post;
-    }
-
-    public IEnumerable<IGrouping<IComment, PostDetailModel>> Execute(AllPostDetailQuery query)
-    {
-        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
-
-        IEnumerable<PostDetailModel> posts =
-            _dbConnection.ExecuteReader("CSP_GetPostsWithDetailsByUserId", record => record.ToPostDetail(), true, query)
-                .ToList();
-
-        _dbConnection.Close();
-        return posts.GroupBy(g => g.Comments);
     }
 }

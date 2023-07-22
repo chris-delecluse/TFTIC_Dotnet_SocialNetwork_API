@@ -8,5 +8,6 @@ namespace SocialNetwork.Domain.Repositories;
 
 public interface ICommentRepository :
     ICommandHandler<CommentCommand, int>,
-    IQueryHandler<CommentUserIdListByPostIdQuery, IEnumerable<int>>,
+    IQueryHandler<CommentsUserIdByPostIdQuery, IEnumerable<int>>,
+    IQueryHandler<CommentGroupByPostIdQuery, IEnumerable<IGrouping<IPost, CommentModel>>>,
     IQueryHandler<CommentsGroupByPostIdQuery, IEnumerable<IGrouping<IPost, CommentModel>>> { }

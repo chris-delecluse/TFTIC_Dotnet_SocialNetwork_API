@@ -9,5 +9,4 @@ namespace SocialNetwork.Domain.Repositories;
 public interface IPostRepository :
     ICommandHandler<PostCommand, int>,
     IQueryHandler<AllPostQuery, IEnumerable<PostModel>>,
-    IQueryHandler<AllPostDetailQuery, IEnumerable<IGrouping<IComment, PostDetailModel>>>,
     IQueryHandler<PostQuery, PostModel?> { }

@@ -29,14 +29,14 @@ public class CommentService : ICommentRepository
         catch (Exception e) { return ICommandResult<int>.Failure(e.Message); }
     }
 
-    public IEnumerable<int> Execute(CommentUserIdListByPostIdQuery query)
+    public IEnumerable<int> Execute(CommentsUserIdByPostIdQuery idQuery)
     {
         if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
         IEnumerable<int> userIds = _dbConnection.ExecuteReader("CSP_GetUserIdsFromCommentByPostId",
                 record => record.ToCommentUserId(),
                 true,
-                query
+                idQuery
             )
             .ToList();
 
@@ -50,6 +50,17 @@ public class CommentService : ICommentRepository
 
         IEnumerable<CommentModel> models =
             _dbConnection.ExecuteReader("CSP_GetPostsGroupByComment", record => record.ToComment(), true, query).ToList();
+        
+        _dbConnection.Close();
+        return models.GroupBy(c => c.Posts);
+    }
+
+    public IEnumerable<IGrouping<IPost, CommentModel>>  Execute(CommentGroupByPostIdQuery query)
+    {
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+
+        IEnumerable<CommentModel> models =
+            _dbConnection.ExecuteReader("CSP_GetPostGroupByComment", record => record.ToComment(), true, query).ToList();
         
         _dbConnection.Close();
         return models.GroupBy(c => c.Posts);
