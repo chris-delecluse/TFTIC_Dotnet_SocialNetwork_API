@@ -32,5 +32,5 @@ public class CommentHubService : ICommentHubService
     }
 
     private IEnumerable<int> GetUserIdsFromCommentBasedOnPostId(int postId) =>
-        _commentService.Execute(new CommentsUserIdByPostIdQuery(postId));
+        _commentService.Execute(new CommentUserIdListByPostQuery(postId));
 }

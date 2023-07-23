@@ -1,7 +1,7 @@
 use social_network
 go
 
-create procedure [dbo].[CSP_GetPostsGroupByComment]
+create procedure [dbo].[CSP_GetPostsGroupByComment](@isDeleted bit)
 as
 begin
     select C.id        as id,
@@ -17,4 +17,5 @@ begin
     from Comments as C
              right join Posts as P on P.id = C.postId
              join Users U on U.id = P.userId
+    where P.isDeleted = @isDeleted
 end

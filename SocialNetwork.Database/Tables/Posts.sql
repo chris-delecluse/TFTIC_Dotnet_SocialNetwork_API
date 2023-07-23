@@ -7,6 +7,7 @@ create table [Posts]
     content   nvarchar(max)       not null,
     createdAt datetime2(7)        not null default (sysdatetime()),
     userId    int                 not null,
+    isDeleted bit                 not null default (0),
 
     constraint PK_Posts primary key (id),
     constraint FK_Posts_Users foreign key (userId) references [Users] (id)
