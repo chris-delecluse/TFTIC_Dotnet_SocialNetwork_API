@@ -11,8 +11,11 @@ begin
            P.id        as postId,
            P.content   as postContent,
            P.createdAt as postCreatedAt,
-           P.userId    as postUserId
+           P.userId    as postUserId,
+           U.firstname as postUserFirstName,
+           U.lastName  as postUserLastName
     from Comments as C
              right join Posts as P on P.id = C.postId
+             join Users U on U.id = P.userId
     where P.id = @postId
 end

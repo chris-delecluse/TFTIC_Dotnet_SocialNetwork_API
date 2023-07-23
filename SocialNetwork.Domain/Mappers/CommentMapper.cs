@@ -13,7 +13,9 @@ internal static class CommentMapper
             Mapper.GetValueOrDefault<int>(record, "postId"),
             Mapper.GetValueOrDefault<string>(record, "postContent"),
             Mapper.GetValueOrDefault<DateTime>(record, "postCreatedAt"),
-            Mapper.GetValueOrDefault<int>(record, "postUserId")
+            Mapper.GetValueOrDefault<int>(record, "postUserId"),
+            Mapper.GetValueOrDefault<string>(record, "postUserFirstName"),
+            Mapper.GetValueOrDefault<string>(record, "postUserLastName")
         );
     
     internal static int ToCommentUserId(this IDataRecord record) => (int)record["userId"];

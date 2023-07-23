@@ -60,6 +60,7 @@ public class FriendController : ControllerBase
         return Accepted(new ApiResponse(202, true, "Friend request updated successfully."));
     }
 
+    [HttpDelete("{id}")]
     public IActionResult Remove(int id)
     {
         return NoContent();
