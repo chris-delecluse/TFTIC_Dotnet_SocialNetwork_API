@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
@@ -25,7 +26,12 @@ public class AuthHubService : FriendListHubTools, IAuthHubService
         {
             string groupName = $"FriendsGroup_{friend.ResponderId}";
             await _authContext.AddToGroup(groupName);
-            await _authContext.SendMessage(groupName, $"{userModel.FirstName} {userModel.LastName} has connected !");
+            await _authContext.SendMessage(groupName,
+                JsonSerializer.Serialize(new HubResponse("Connection",
+                        $"{userModel.FirstName} {userModel.LastName} has connected !"
+                    )
+                )
+            );
         }
     }
 
@@ -34,7 +40,12 @@ public class AuthHubService : FriendListHubTools, IAuthHubService
         foreach (FriendModel friend in GetUserFriendList(user.Id))
         {
             string groupName = $"FriendsGroup_{friend.ResponderId}";
-            await _authContext.SendMessage(groupName, $"{user.FirstName} {user.LastName} has disconnected !");
+            await _authContext.SendMessage(groupName,
+                JsonSerializer.Serialize(new HubResponse("DisConnection",
+                        $"{user.FirstName} {user.LastName} has disconnected !"
+                    )
+                )
+            );
             await _authContext.RemoveToGroup(groupName);
         }
     }

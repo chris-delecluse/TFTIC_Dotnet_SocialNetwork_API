@@ -1,7 +1,7 @@
 use social_network
 go
 
-create procedure [dbo].[CSP_GetPostsGroupByComment](@isDeleted bit)
+create procedure [dbo].[CSP_GetPostsGroupByComment](@isDeleted bit, @offset int, @limit int)
 as
 begin
     select C.id        as id,
@@ -14,8 +14,11 @@ begin
            P.userId    as postUserId,
            U.firstname as postUserFirstName,
            U.lastName  as postUserLastName
-    from Comments as C
-             right join Posts as P on P.id = C.postId
+    from (select *
+          from Posts
+          order by createdAt desc
+          offset @offset rows fetch next @limit rows only) P
+             left join Comments C on P.id = C.postId
              join Users U on U.id = P.userId
     where P.isDeleted = @isDeleted
 end

@@ -28,10 +28,10 @@ public class PostController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Get([FromQuery] bool isDeleted = false, [FromQuery] int? pagination = 10)
+    public IActionResult Get([FromQuery] int? offset, [FromQuery] bool isDeleted = false)
     {
         IEnumerable<IGrouping<IPost, PostModel>> postsGroupByComment =
-            _postService.Execute(new PostListQuery(isDeleted));
+            _postService.Execute(new PostListQuery(offset ?? 0, 10, isDeleted));
 
         return Ok(new ApiResponse(200, true, postsGroupByComment.ToPostDto()));
     }
@@ -40,12 +40,18 @@ public class PostController : ControllerBase
     public IActionResult Get([FromBody] int id, [FromQuery] bool isDeleted = false)
     {
         IEnumerable<IGrouping<IPost, PostModel>> post =
-            _postService.Execute(new PostQuery(id)).ToList();
+            _postService.Execute(new PostQuery(id))
+                .ToList();
 
-        if (!post.Any()) 
-            return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));
+        if (!post.Any()) return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));
 
-        return Ok(new ApiResponse(200, true, post.First().ToPostDto(), "Success"));
+        return Ok(new ApiResponse(200,
+                true,
+                post.First()
+                    .ToPostDto(),
+                "Success"
+            )
+        );
     }
 
     [HttpPost]
@@ -57,10 +63,15 @@ public class PostController : ControllerBase
         if (result.IsFailure) return BadRequest(new ApiResponse(400, false, result.Message));
 
         IEnumerable<IGrouping<IPost, PostModel>> post =
-            _postService.Execute(new PostQuery(result.Result)).ToList();
+            _postService.Execute(new PostQuery(result.Result))
+                .ToList();
 
         _hubService.NotifyNewPostToFriends(user,
-            new HubResponse("new_post", post.First().ToPostDto()));
+            new HubResponse("new_post",
+                post.First()
+                    .ToPostDto()
+            )
+        );
         return Created("", new ApiResponse(201, true, "Post Added successfully."));
     }
 

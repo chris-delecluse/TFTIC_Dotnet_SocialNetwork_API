@@ -5,7 +5,6 @@ using SocialNetwork.Domain.Repositories;
 using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.SignalR.Extensions;
 using SocialNetwork.WebApi.SignalR.Hubs;
-using SocialNetwork.WebApi.SignalR.Tools;
 using SocialNetwork.WebApi.SignalR.Interfaces;
 
 namespace SocialNetwork.WebApi.SignalR.Services;
