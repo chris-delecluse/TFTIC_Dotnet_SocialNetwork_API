@@ -37,21 +37,15 @@ public class PostController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult Get([FromBody] int id, [FromQuery] bool isDeleted = false)
+    public IActionResult Get(int id, [FromQuery] bool isDeleted = false)
     {
         IEnumerable<IGrouping<IPost, PostModel>> post =
-            _postService.Execute(new PostQuery(id))
-                .ToList();
+            _postService.Execute(new PostQuery(id, isDeleted)).ToList();
 
-        if (!post.Any()) return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));
+        if (!post.Any()) 
+            return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));
 
-        return Ok(new ApiResponse(200,
-                true,
-                post.First()
-                    .ToPostDto(),
-                "Success"
-            )
-        );
+        return Ok(new ApiResponse(200, true, post.First().ToPostDto(), "Success"));
     }
 
     [HttpPost]
@@ -60,21 +54,19 @@ public class PostController : ControllerBase
         UserInfo user = HttpContext.ExtractDataFromToken();
         ICommandResult<int> result = _postService.Execute(new PostCommand(form.Content, user.Id));
 
-        if (result.IsFailure) return BadRequest(new ApiResponse(400, false, result.Message));
+        if (result.IsFailure) 
+            return BadRequest(new ApiResponse(400, false, result.Message));
 
         IEnumerable<IGrouping<IPost, PostModel>> post =
-            _postService.Execute(new PostQuery(result.Result))
-                .ToList();
+            _postService.Execute(new PostQuery(result.Result, false)).ToList();
 
-        _hubService.NotifyNewPostToFriends(user,
-            new HubResponse("new_post",
-                post.First()
-                    .ToPostDto()
-            )
-        );
+        _hubService.NotifyNewPostToFriends(user, new HubResponse("new_post", post.First().ToPostDto()));
         return Created("", new ApiResponse(201, true, "Post Added successfully."));
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Remove(int id) { return NoContent(); }
+    public IActionResult Remove(int id)
+    {
+        return NoContent();
+    }
 }
