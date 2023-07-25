@@ -5,4 +5,4 @@ namespace SocialNetwork.Domain.Repositories;
 
 public interface ILikeRepository :
     ICommandHandler<LikeCommand>,
-    ICommandHandler<DisLikeCommand> { }
+    ICommandHandler<DeleteLikeCommand> { }

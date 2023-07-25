@@ -33,8 +33,21 @@ public class LikeService: ILikeRepository
         }
     }
 
-    public ICommandResult Execute(DisLikeCommand command)
+    public ICommandResult Execute(DeleteLikeCommand command)
     {
-        throw new NotImplementedException();
+        try
+        {
+            if (_dbConnection.State is not ConnectionState.Open)
+                _dbConnection.Open();
+
+            _dbConnection.ExecuteNonQuery("CSP_RemoveLike", true, command);
+            
+            _dbConnection.Close();
+            return ICommandResult.Success();
+        }
+        catch (Exception e)
+        {
+            return ICommandResult.Failure(e.Message);
+        }
     }
 }

@@ -12,12 +12,18 @@ namespace SocialNetwork.WebApi.SignalR.Services;
 
 public class PostHubService : FriendListHubTools, IPostHubService
 {
-    private readonly IHubContext<PostHub, IClientHub> _hubContext;
+    private readonly IHubContext<PostHub, IClientHub> _postHubContext;
+    private readonly IHubContext<LikeHub, IClientHub> _likeHubContext;
 
-    public PostHubService(IFriendRepository friendService, IHubContext<PostHub, IClientHub> hubContext) :
+    public PostHubService(
+        IFriendRepository friendService,
+        IHubContext<PostHub, IClientHub> postHubContext,
+        IHubContext<LikeHub, IClientHub> likeHubContext
+    ) :
         base(friendService)
     {
-        _hubContext = hubContext;
+        _postHubContext = postHubContext;
+        _likeHubContext = likeHubContext;
     }
 
     public async Task NotifyNewPostToFriends<T>(UserInfo user, T dataToSend)
@@ -25,8 +31,15 @@ public class PostHubService : FriendListHubTools, IPostHubService
         foreach (FriendModel friend in GetUserFriendList(user.Id))
         {
             string groupName = $"PostGroup_{friend.ResponderId}";
-            await _hubContext.AddToGroup(groupName);
-            await _hubContext.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
+            await _postHubContext.AddToGroup(groupName);
+            await _postHubContext.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
         }
+    }
+
+    public async Task NotifyLikeToPost<T>(int postId, T dataToSend)
+    {
+        string groupName = $"LikeGroup_{postId}";
+        await _likeHubContext.AddToGroup(groupName);
+        await _likeHubContext.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
     }
 }

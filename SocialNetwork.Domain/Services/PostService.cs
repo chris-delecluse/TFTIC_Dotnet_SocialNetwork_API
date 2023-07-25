@@ -31,26 +31,48 @@ public class PostService : IPostRepository
             return ICommandResult<int>.Failure(e.Message);
         }
     }
-    
+
     public IEnumerable<IGrouping<IPost, PostModel>> Execute(PostListQuery query)
     {
-        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) 
+            _dbConnection.Open();
 
         IEnumerable<PostModel> models =
-            _dbConnection.ExecuteReader("CSP_GetPostsGroupByComment", record => record.ToPost(), true, query).ToList();
-        
+            _dbConnection.ExecuteReader("CSP_GetPostsGroupByComment", record => record.ToPost(), true, query)
+                .ToList();
+
         _dbConnection.Close();
         return models.GroupBy(c => c.Posts);
     }
 
-    public IEnumerable<IGrouping<IPost, PostModel>>  Execute(PostQuery query)
+    public IEnumerable<IGrouping<IPost, PostModel>> Execute(PostQuery query)
     {
-        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) 
+            _dbConnection.Open();
 
         IEnumerable<PostModel> models =
-            _dbConnection.ExecuteReader("CSP_GetPostGroupByComment", record => record.ToPost(), true, query).ToList();
-        
+            _dbConnection.ExecuteReader("CSP_GetPostGroupByComment", record => record.ToPost(), true, query)
+                .ToList();
+
         _dbConnection.Close();
         return models.GroupBy(c => c.Posts);
+    }
+
+    public ICommandResult Execute(UpdatePostCommand command)
+    {
+        try
+        {
+            if (_dbConnection.State is not ConnectionState.Open) 
+                _dbConnection.Open();
+
+            _dbConnection.ExecuteNonQuery("CSP_UpdateIsDeletedPost", true, command);
+
+            _dbConnection.Close();
+            return ICommandResult.Success();
+        }
+        catch (Exception e)
+        {
+            return ICommandResult.Failure(e.Message);
+        }
     }
 }

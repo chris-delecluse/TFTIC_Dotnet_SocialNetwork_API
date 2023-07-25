@@ -11,6 +11,9 @@ public static class HubContextExtension
     )
         where THub : Hub<THubInterface> where THubInterface : class, IClientHub
     {
+        // exemple d'Aurelien:
+        // await hubContext.Clients.User("useridSignalR")
+        //     .SendMessage("Test");
         await hubContext.Clients.Groups(groupName)
             .JoinGroup(groupName);
     }

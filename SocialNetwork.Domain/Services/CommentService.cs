@@ -3,6 +3,7 @@ using SocialNetwork.Domain.Commands.Comment;
 using SocialNetwork.Domain.Mappers;
 using SocialNetwork.Domain.Queries.Comment;
 using SocialNetwork.Domain.Repositories;
+using SocialNetwork.Models;
 using SocialNetwork.Tools.Ado;
 using SocialNetwork.Tools.Cqs.Shared;
 
@@ -41,5 +42,16 @@ public class CommentService : ICommentRepository
 
         _dbConnection.Close();
         return userIds;
+    }
+
+    public IEnumerable<CommentModel> Execute(CommentListByPostQuery query)
+    {
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+
+        IEnumerable<CommentModel> models =
+            _dbConnection.ExecuteReader("CSP_GetCommentListByPost", record => record.ToComment(), true, query).ToList();
+
+        _dbConnection.Close();
+        return models;
     }
 }

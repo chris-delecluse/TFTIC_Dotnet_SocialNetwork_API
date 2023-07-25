@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Commands.Comment;
 using SocialNetwork.Domain.Commands.Like;
 using SocialNetwork.Domain.Commands.Post;
+using SocialNetwork.Domain.Queries.Comment;
 using SocialNetwork.Domain.Queries.Post;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
@@ -10,6 +11,7 @@ using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.Models;
+using SocialNetwork.WebApi.Models.Dtos.Comment;
 using SocialNetwork.WebApi.Models.Forms.Comment;
 using SocialNetwork.WebApi.Models.Forms.Post;
 using SocialNetwork.WebApi.Models.Mappers;
@@ -42,7 +44,7 @@ public class PostController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Get([FromQuery] int? offset, [FromQuery] bool isDeleted = false)
+    public IActionResult GetPosts([FromQuery] int? offset, [FromQuery] bool isDeleted = false)
     {
         IEnumerable<IGrouping<IPost, PostModel>> postsGroupByComment =
             _postService.Execute(new PostListQuery(offset ?? 0, 10, isDeleted));
@@ -51,7 +53,7 @@ public class PostController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult Get(int id, [FromQuery] bool isDeleted = false)
+    public IActionResult GetPost(int id, [FromQuery] bool isDeleted = false)
     {
         IEnumerable<IGrouping<IPost, PostModel>> post =
             _postService.Execute(new PostQuery(id, isDeleted)).ToList();
@@ -63,7 +65,7 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Add(PostForm form)
+    public IActionResult AddPost(PostForm form)
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
         ICommandResult<int> result = _postService.Execute(new PostCommand(form.Content, user.Id));
@@ -71,27 +73,36 @@ public class PostController : ControllerBase
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));
 
-        IEnumerable<IGrouping<IPost, PostModel>> post =
+        IEnumerable<IGrouping<IPost, PostModel>> hubResponse =
             _postService.Execute(new PostQuery(result.Result, false)).ToList();
 
-        _postHubService.NotifyNewPostToFriends(user, new HubResponse("new_post", post.First().ToPostDto()));
+        _postHubService.NotifyNewPostToFriends(user, new HubResponse("new_post", hubResponse.First().ToPostDto()));
         return Created("", new ApiResponse(201, true, "Post Added successfully."));
     }
     
     [HttpDelete("{id}")]
-    public IActionResult Remove(int id)
+    public IActionResult RemovePost(int id)
     {
+        UserInfo user = HttpContext.ExtractDataFromToken();
+        ICommandResult result = _postService.Execute(new UpdatePostCommand(id, user.Id, true));
+
+        if (result.IsFailure) 
+            return BadRequest(new ApiResponse(400, false, result.Message));
+
         return NoContent();
     }
 
     [HttpGet("{id}/comment")]
-    public IActionResult Get()
+    public IActionResult GetPostComments(int id)
     {
-        return Ok();
+        IEnumerable<CommentDto> comments = 
+            _commentService.Execute(new CommentListByPostQuery(id)).ToCommentDto();
+        
+        return Ok(new ApiResponse(200, true, comments));
     }
     
     [HttpPost("{id}/comment")]
-    public IActionResult Add(int id, CommentForm form)
+    public IActionResult AddPostComment(int id, CommentForm form)
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
         ICommandResult<int> result = _commentService.Execute(new CommentCommand(form.Content, id, user.Id));
@@ -100,12 +111,12 @@ public class PostController : ControllerBase
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));
 
-        _commentHubService.NotifyNewCommentToPost(user, id, new HubResponse("AddComment", hubMessage));
+        _commentHubService.NotifyNewCommentToPost(user, id, new HubResponse("add_comment", hubMessage));
         return Created("", new ApiResponse(201, true, "Comment created successfully."));
     }
 
     [HttpPost("{id}/like")]
-    public IActionResult Add(int id)
+    public IActionResult AddPostLike(int id)
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
         ICommandResult result = _likeService.Execute(new LikeCommand(id, user.Id));
@@ -113,24 +124,27 @@ public class PostController : ControllerBase
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));
 
+        var hubResponse = new
+        {
+            user.Id,  
+            user.FirstName, 
+            user.LastName, 
+            PostId = id
+        };
+
+        _postHubService.NotifyLikeToPost(id, new HubResponse("new_like", hubResponse));
         return Created("", new ApiResponse(201, true, "Like added successfully."));
     }
     
     [HttpDelete("{id}/like")]
-    public IActionResult Remove(string id)
+    public IActionResult RemovePostLike(int id)
     {
-        return NoContent();
-    }
+        UserInfo user = HttpContext.ExtractDataFromToken();
+        ICommandResult result = _likeService.Execute(new DeleteLikeCommand(id, user.Id));
 
-    [HttpPost("comment/{id}/like")]
-    public IActionResult Add(Guid lol)
-    {
-        return Ok();
-    }
-    
-    [HttpDelete("comment/{id}/like")]
-    public IActionResult Remove(Guid id)
-    {
+        if (result.IsFailure) 
+            return BadRequest(new ApiResponse(400, false, result.Message));
+        
         return NoContent();
     }
 }
