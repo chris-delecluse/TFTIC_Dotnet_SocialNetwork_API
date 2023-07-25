@@ -8,8 +8,25 @@ create procedure [dbo].[CSP_AddFriend](
 )
 as
 begin
-    insert into [Friends] (requestId, responderId, state)
-    values (@requestId, @responderId, @state)
+    if exists(select 1
+              from Friends
+              where (requestId = @requestId and responderId = @responderId)
+                 or (requestId = @responderId and responderId = @requestId)
+                  and (state = 'Pending' or state = 'Accepted'))
+        begin
+            throw 51001, 'Friend relationship already exists or the request is pending !',1
+        end
 
-    select SCOPE_IDENTITY()
+    begin try
+        begin transaction;
+        insert into [Friends] (requestId, responderId, state)
+        values (@requestId, @responderId, @state)
+
+        select SCOPE_IDENTITY()
+        commit transaction;
+    end try
+    begin catch
+        rollback transaction;
+        throw
+    end catch
 end

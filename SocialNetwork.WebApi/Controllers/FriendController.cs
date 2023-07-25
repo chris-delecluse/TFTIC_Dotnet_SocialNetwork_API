@@ -63,6 +63,12 @@ public class FriendController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Remove(int id)
     {
+        UserInfo user = HttpContext.ExtractDataFromToken();
+        ICommandResult result = _friendService.Execute(new RemoveFriendCommand(user.Id, id));
+
+        if (result.IsFailure) 
+            return BadRequest(new ApiResponse(400, false, result.Message));
+        
         return NoContent();
     }
 }

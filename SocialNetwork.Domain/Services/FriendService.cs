@@ -13,20 +13,18 @@ public class FriendService : IFriendRepository
 {
     private readonly IDbConnection _dbConnection;
 
-    public FriendService(IDbConnection dbConnection)
-    {
-        _dbConnection = dbConnection;
-    }
+    public FriendService(IDbConnection dbConnection) => _dbConnection = dbConnection;
 
     public ICommandResult Execute(FriendCommand command)
     {
         if (command.ResponderId <= 0)
-            return ICommandResult.Failure("The user request to befriend (for 'responderId') cannot be less than or equal to 0.");
+            return ICommandResult.Failure(
+                "The user request to befriend (for 'responderId') cannot be less than or equal to 0."
+            );
 
         try
         {
-            if (_dbConnection.State is not ConnectionState.Open)
-                _dbConnection.Open();
+            if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
             _dbConnection.ExecuteNonQuery("CSP_AddFriend",
                 true,
@@ -42,7 +40,7 @@ public class FriendService : IFriendRepository
             return ICommandResult.Success();
         }
         catch (Exception e)
-        {
+        { 
             return ICommandResult.Failure(e.Message);
         }
     }
@@ -51,8 +49,7 @@ public class FriendService : IFriendRepository
     {
         try
         {
-            if (_dbConnection.State is not ConnectionState.Open) 
-                _dbConnection.Open();
+            if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
             _dbConnection.ExecuteNonQuery("CSP_UpdateFriendRequestStatus",
                 true,
@@ -63,9 +60,6 @@ public class FriendService : IFriendRepository
                     State = Enum.GetName(typeof(EFriendState), command.State)
                 }
             );
-
-            if (command.State is EFriendState.Accepted)
-                AddFriendsToEachOther(command.ResponderId, command.RequestId);
 
             _dbConnection.Close();
             return ICommandResult.Success();
@@ -78,12 +72,10 @@ public class FriendService : IFriendRepository
 
     public IEnumerable<FriendModel> Execute(FriendListQuery query)
     {
-        if (_dbConnection.State is not ConnectionState.Open)
-            _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
         IEnumerable<FriendModel> friendList = _dbConnection
-            .ExecuteReader("CSP_GetFriendList", record => record.ToFriend(), true, query)
-            .ToList();
+            .ExecuteReader("CSP_GetFriendList", record => record.ToFriend(), true, query).ToList();
 
         _dbConnection.Close();
         return friendList;
@@ -91,25 +83,34 @@ public class FriendService : IFriendRepository
 
     public IEnumerable<FriendModel> Execute(FriendListByStateQuery query)
     {
-        if (_dbConnection.State is not ConnectionState.Open) 
-            _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
         IEnumerable<FriendModel> friendList = _dbConnection
             .ExecuteReader("CSP_GetFriendListByState",
                 record => record.ToFriend(),
                 true,
-                new 
-                {
-                    requestId = query.RequestId,
-                    State = Enum.GetName(typeof(EFriendState), query.State) 
-                }
+                new { requestId = query.RequestId, State = Enum.GetName(typeof(EFriendState), query.State) }
             )
             .ToList();
 
         _dbConnection.Close();
         return friendList;
     }
+    
+    public ICommandResult Execute(RemoveFriendCommand command)
+    {
+        try
+        {
+            if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
-    private void AddFriendsToEachOther(int requestId, int responderId) =>
-        Execute(new FriendCommand(requestId, responderId, EFriendState.Accepted));
+            _dbConnection.ExecuteNonQuery("CSP_RemoveFriend", true, command);
+            
+            _dbConnection.Close();
+            return ICommandResult.Success();
+        }
+        catch (Exception e)
+        {
+            return ICommandResult.Failure(e.Message);
+        }
+    }
 }
