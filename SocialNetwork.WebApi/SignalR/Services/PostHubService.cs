@@ -1,4 +1,5 @@
 using System.Text.Json;
+using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
@@ -16,11 +17,11 @@ public class PostHubService : FriendListHubTools, IPostHubService
     private readonly IHubContext<LikeHub, IClientHub> _likeHubContext;
 
     public PostHubService(
-        IFriendRepository friendService,
+        IMediator mediator,
         IHubContext<PostHub, IClientHub> postHubContext,
         IHubContext<LikeHub, IClientHub> likeHubContext
     ) :
-        base(friendService)
+        base(mediator)
     {
         _postHubContext = postHubContext;
         _likeHubContext = likeHubContext;
@@ -28,7 +29,7 @@ public class PostHubService : FriendListHubTools, IPostHubService
 
     public async Task NotifyNewPostToFriends<T>(UserInfo user, T dataToSend)
     {
-        foreach (FriendModel friend in GetUserFriendList(user.Id))
+        foreach (FriendModel friend in await GetUserFriendList(user.Id))
         {
             string groupName = $"PostGroup_{friend.ResponderId}";
             await _postHubContext.AddToGroup(groupName);

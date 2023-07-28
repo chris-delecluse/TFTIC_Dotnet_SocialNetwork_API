@@ -1,6 +1,6 @@
 using System.Text.Json;
+using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
 using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.SignalR.Tools;
@@ -14,15 +14,15 @@ public class AuthHubService : FriendListHubTools, IAuthHubService
 {
     private readonly IHubContext<AuthHub, IClientHub> _authContext;
 
-    public AuthHubService(IFriendRepository friendService, IHubContext<AuthHub, IClientHub> authContext) :
-        base(friendService)
+    public AuthHubService(IMediator mediator, IHubContext<AuthHub, IClientHub> authContext) :
+        base(mediator)
     {
         _authContext = authContext;
     }
 
     public async Task NotifyUserConnectedToFriends(UserModel userModel)
     {
-        foreach (FriendModel friend in GetUserFriendList(userModel.Id))
+        foreach (FriendModel friend in await GetUserFriendList(userModel.Id))
         {
             string groupName = $"FriendsGroup_{friend.ResponderId}";
             await _authContext.AddToGroup(groupName);
@@ -37,7 +37,7 @@ public class AuthHubService : FriendListHubTools, IAuthHubService
 
     public async Task NotifyUserDisConnectedToFriends(UserInfo user)
     {
-        foreach (FriendModel friend in GetUserFriendList(user.Id))
+        foreach (FriendModel friend in await GetUserFriendList(user.Id))
         {
             string groupName = $"FriendsGroup_{friend.ResponderId}";
             await _authContext.SendMessage(groupName,

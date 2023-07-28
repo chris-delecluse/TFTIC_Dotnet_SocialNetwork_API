@@ -18,4 +18,9 @@ public class FriendModel
     }
 }
 
-public enum EFriendState { Pending, Accepted, Rejected }
+public enum EFriendState
+{
+    Pending,
+    Accepted, 
+    Rejected
+}

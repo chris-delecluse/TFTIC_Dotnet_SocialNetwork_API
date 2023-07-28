@@ -1,7 +1,7 @@
 using System.Text.Json;
+using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.Domain.Queries.Comment;
-using SocialNetwork.Domain.Repositories;
+using SocialNetwork.Domain.Queries.Queries.Comment;
 using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.SignalR.Extensions;
 using SocialNetwork.WebApi.SignalR.Hubs;
@@ -11,18 +11,21 @@ namespace SocialNetwork.WebApi.SignalR.Services;
 
 public class CommentHubService : ICommentHubService
 {
-    private readonly ICommentRepository _commentService;
+    private readonly IMediator _mediator;
     private readonly IHubContext<CommentHub, IClientHub> _postContext;
 
-    public CommentHubService(ICommentRepository commentService, IHubContext<CommentHub, IClientHub> postContext)
+    public CommentHubService(
+        IHubContext<CommentHub, IClientHub> postContext,
+        IMediator mediator
+    )
     {
-        _commentService = commentService;
         _postContext = postContext;
+        _mediator = mediator;
     }
 
     public async Task NotifyNewCommentToPost<T>(UserInfo user, int postId, T dataToSend)
     {
-        foreach (int targetUserId in GetUserIdsFromCommentBasedOnPostId(postId))
+        foreach (int targetUserId in await GetUserIdsFromCommentBasedOnPostId(postId))
         {
             string groupName = $"CommentGroup_{targetUserId}";
             await _postContext.AddToGroup(groupName);
@@ -30,6 +33,6 @@ public class CommentHubService : ICommentHubService
         }
     }
 
-    private IEnumerable<int> GetUserIdsFromCommentBasedOnPostId(int postId) =>
-        _commentService.Execute(new CommentUserIdListByPostQuery(postId));
+    private async Task<IEnumerable<int>> GetUserIdsFromCommentBasedOnPostId(int postId) =>
+        await _mediator.Send(new CommentUserIdListByPostQuery(postId));
 }

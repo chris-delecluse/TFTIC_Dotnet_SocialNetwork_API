@@ -1,21 +1,20 @@
-using SocialNetwork.Domain.Queries.Friend;
-using SocialNetwork.Domain.Repositories;
+using MediatR;
+using SocialNetwork.Domain.Queries.Queries.Friend;
 using SocialNetwork.Models;
-using SocialNetwork.WebApi.Infrastructures.Security;
 
 namespace SocialNetwork.WebApi.SignalR.Tools;
 
 public abstract class FriendListHubTools
 {
-    private readonly IFriendRepository _friendService;
+    private readonly IMediator _mediator;
 
-    protected FriendListHubTools(IFriendRepository friendService)
+    protected FriendListHubTools(IMediator mediator)
     {
-        _friendService = friendService;
+        _mediator = mediator;
     }
 
-    protected IEnumerable<FriendModel> GetUserFriendList(int id)
+    protected Task<IEnumerable<FriendModel>> GetUserFriendList(int id)
     {
-        return _friendService.Execute(new FriendListByStateQuery(id, EFriendState.Accepted));
+        return _mediator.Send(new FriendListByStateQuery(id, EFriendState.Accepted));
     }
 }

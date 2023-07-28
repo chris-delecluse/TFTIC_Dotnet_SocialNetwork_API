@@ -1,0 +1,16 @@
+using MediatR;
+using SocialNetwork.Tools.Cqs.Shared;
+
+namespace SocialNetwork.Domain.Commands.Commands.Friend;
+
+public class RemoveFriendCommand: IRequest<ICommandResult>
+{
+    public int RequestId { get; init; }
+    public int ResponderId { get; init; }
+
+    public RemoveFriendCommand(int requestId, int responderId)
+    {
+        RequestId = requestId;
+        ResponderId = responderId;
+    } 
+}

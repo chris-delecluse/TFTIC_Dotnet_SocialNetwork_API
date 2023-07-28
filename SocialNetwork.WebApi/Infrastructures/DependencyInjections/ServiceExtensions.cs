@@ -1,11 +1,15 @@
 using System.Data;
 using System.Text;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SocialNetwork.Domain.Repositories;
-using SocialNetwork.Domain.Services;
+using SocialNetwork.Domain.Repositories.Auth;
+using SocialNetwork.Domain.Repositories.Comment;
+using SocialNetwork.Domain.Repositories.Friend;
+using SocialNetwork.Domain.Repositories.Like;
+using SocialNetwork.Domain.Repositories.Post;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.SignalR.Interfaces;
@@ -20,18 +24,35 @@ internal static class ServiceExtensions
         service.AddSingleton<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("Default")));
         service.AddSingleton<IUserConnectionState, UserConnectionState>();
         
+        service.AddScoped<IAuthRepository, AuthRepository>();
+        service.AddScoped<IFriendRepository, FriendRepository>();
+        service.AddScoped<IPostRepository, PostRepository>();
+        service.AddScoped<ICommentRepository, CommentRepository>();
+        service.AddScoped<ILikeRepository, LikeRepository>();
+        service.AddScoped<ITokenService, TokenService>();
+        
         service.AddScoped<IAuthHubService, AuthHubService>();
         service.AddScoped<IPostHubService, PostHubService>();
         service.AddScoped<ICommentHubService, CommentHubService>();
-
-        service.AddScoped<ITokenService, TokenService>();
-        service.AddScoped<IAuthRepository, AuthService>();
-        service.AddScoped<IPostRepository, PostService>();
-        service.AddScoped<ICommentRepository, CommentService>();
-        service.AddScoped<ILikeRepository, LikeService>();
-        service.AddScoped<IFriendRepository, FriendService>();
-
+        
         service.AddSignalR();
+        
+        service.AddMediatR(opt => opt.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+        AppDomain.CurrentDomain.GetAssemblies()
+            .ToList()
+            .ForEach(a => a
+                .GetTypes()
+                .Where(type => type is { IsAbstract: false, IsInterface: false, IsGenericType: false } &&
+                               type.GetInterfaces()
+                                   .Any(t =>
+                                       t.IsGenericType &&
+                                       t.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)
+                                   )
+                )
+                .ToList()
+                .ForEach(type => service.AddScoped(type.GetInterfaces().First(), type))
+            );
         
         service.AddCors(options =>
         {
