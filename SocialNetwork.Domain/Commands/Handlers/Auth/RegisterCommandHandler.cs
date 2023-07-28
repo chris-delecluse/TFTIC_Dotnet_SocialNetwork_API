@@ -1,21 +1,29 @@
-using MediatR;
-using SocialNetwork.Domain.Commands.Commands.Auth;
-using SocialNetwork.Domain.Repositories.Auth;
-using SocialNetwork.Tools.Cqs.Shared;
+    using MediatR;
+    using SocialNetwork.Domain.Commands.Commands.Auth;
+    using SocialNetwork.Domain.Repositories.Auth;
+    using SocialNetwork.Domain.Shared;
 
-namespace SocialNetwork.Domain.Commands.Handlers.Auth;
+    namespace SocialNetwork.Domain.Commands.Handlers.Auth;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ICommandResult>
-{
-    private readonly IAuthRepository _authRepository;
-
-    public RegisterCommandHandler(IAuthRepository authRepository)
+    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ICommandResult>
     {
-        _authRepository = authRepository;
-    }
+        private readonly IAuthRepository _authRepository;
 
-    public async Task<ICommandResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
-    {
-        return await _authRepository.RegisterUser(request);
+        public RegisterCommandHandler(IAuthRepository authRepository)
+        {
+            _authRepository = authRepository;
+        }
+
+        public async Task<ICommandResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _authRepository.RegisterUser(request);
+                return CommandResult.Success();
+            }
+            catch (Exception)
+            {
+                return CommandResult.Failure($"{nameof(request.Email)} is already used.");
+            }
+        }
     }
-}
