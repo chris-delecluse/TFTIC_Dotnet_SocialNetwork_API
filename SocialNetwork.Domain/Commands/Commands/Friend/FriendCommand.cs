@@ -1,6 +1,6 @@
 using MediatR;
+using SocialNetwork.Domain.Shared;
 using SocialNetwork.Models;
-using SocialNetwork.Tools.Cqs.Shared;
 
 namespace SocialNetwork.Domain.Commands.Commands.Friend;
 

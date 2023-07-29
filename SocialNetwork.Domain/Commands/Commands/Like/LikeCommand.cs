@@ -1,5 +1,5 @@
 using MediatR;
-using SocialNetwork.Tools.Cqs.Shared;
+using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Commands.Like;
 

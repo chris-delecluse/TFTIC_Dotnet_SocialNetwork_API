@@ -1,7 +1,7 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Friend;
 using SocialNetwork.Domain.Repositories.Friend;
-using SocialNetwork.Tools.Cqs.Shared;
+using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Friend;
 
@@ -17,10 +17,18 @@ public class FriendCommandHandler : IRequestHandler<FriendCommand, ICommandResul
     public async Task<ICommandResult> Handle(FriendCommand request, CancellationToken cancellationToken)
     {
         if (request.ResponderId <= 0)
-            return ICommandResult.Failure(
+            return CommandResult.Failure(
                 "The user request to befriend (for 'responderId') cannot be less than or equal to 0."
             );
 
-        return await _friendRepository.Insert(request);
+        try
+        { 
+            await _friendRepository.Insert(request);
+            return CommandResult.Success();
+        }
+        catch (Exception e)
+        {
+            return CommandResult.Failure(e.Message);
+        }
     }
 }

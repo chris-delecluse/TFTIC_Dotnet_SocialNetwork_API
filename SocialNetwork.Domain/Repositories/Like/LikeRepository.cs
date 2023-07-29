@@ -1,7 +1,6 @@
 using System.Data;
 using SocialNetwork.Domain.Commands.Commands.Like;
 using SocialNetwork.Tools.Ado;
-using SocialNetwork.Tools.Cqs.Shared;
 
 namespace SocialNetwork.Domain.Repositories.Like;
 
@@ -14,39 +13,23 @@ public class LikeRepository : ILikeRepository
         _dbConnection = dbConnection;
     }
 
-    public Task<ICommandResult> Insert(LikeCommand command)
+    public Task Insert(LikeCommand command)
     {
-        try
-        {
-            if (_dbConnection.State is not ConnectionState.Open)
-                _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
-            _dbConnection.ExecuteNonQuery("CSP_AddLike", true, command);
-        
-            _dbConnection.Close();
-            return Task.FromResult(ICommandResult.Success());
-        }
-        catch (Exception e)
-        {
-            return Task.FromResult(ICommandResult.Failure(e.Message));
-        }
+        _dbConnection.ExecuteNonQuery("CSP_AddLike", true, command);
+
+        _dbConnection.Close();
+        return Task.CompletedTask;
     }
 
-    public Task<ICommandResult> Remove(RemoveLikeCommand command)
+    public Task Remove(RemoveLikeCommand command)
     {
-        try
-        {
-            if (_dbConnection.State is not ConnectionState.Open)
-                _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
-            _dbConnection.ExecuteNonQuery("CSP_RemoveLike", true, command);
-            
-            _dbConnection.Close();
-            return Task.FromResult(ICommandResult.Success());
-        }
-        catch (Exception e)
-        {
-            return Task.FromResult(ICommandResult.Failure(e.Message));
-        }
+        _dbConnection.ExecuteNonQuery("CSP_RemoveLike", true, command);
+
+        _dbConnection.Close();
+        return Task.CompletedTask;
     }
 }

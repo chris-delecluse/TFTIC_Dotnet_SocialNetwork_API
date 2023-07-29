@@ -1,7 +1,7 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Like;
 using SocialNetwork.Domain.Repositories.Like;
-using SocialNetwork.Tools.Cqs.Shared;
+using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Like;
 
@@ -16,6 +16,14 @@ public class RemoveLikeCommandHandler : IRequestHandler<RemoveLikeCommand, IComm
 
     public async Task<ICommandResult> Handle(RemoveLikeCommand request, CancellationToken cancellationToken)
     {
-        return await _likeRepository.Remove(request);
+        try
+        {
+             await _likeRepository.Remove(request);
+             return CommandResult.Success();
+        }
+        catch (Exception e)
+        {
+            return CommandResult.Failure(e.Message);
+        }
     }
 }

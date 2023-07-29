@@ -6,8 +6,8 @@ using SocialNetwork.Domain.Commands.Commands.Like;
 using SocialNetwork.Domain.Commands.Commands.Post;
 using SocialNetwork.Domain.Queries.Queries.Comment;
 using SocialNetwork.Domain.Queries.Queries.Post;
+using SocialNetwork.Domain.Shared;
 using SocialNetwork.Models;
-using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Infrastructures.Security;
 using SocialNetwork.WebApi.Models;
@@ -66,7 +66,7 @@ public class PostController : ControllerBase
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));
 
-        IEnumerable<IGrouping<IPost, PostModel>> hubResponse = await _mediator.Send(new PostQuery(result.Result, false));
+        IEnumerable<IGrouping<IPost, PostModel>> hubResponse = await _mediator.Send(new PostQuery(result.Data, false));
 
         await _postHubService.NotifyNewPostToFriends(user, new HubResponse("new_post", hubResponse.First().ToPostDto()));
         return Created("", new ApiResponse(201, true, "Post Added successfully."));
@@ -97,7 +97,7 @@ public class PostController : ControllerBase
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
         ICommandResult<int> result = await _mediator.Send(new CommentCommand(form.Content, id, user.Id));
-        object hubMessage = new { Id = result.Result, PostId = id, form.Content };
+        object hubMessage = new { Id = result.Data, PostId = id, form.Content };
 
         if (result.IsFailure) 
             return BadRequest(new ApiResponse(400, false, result.Message));

@@ -9,7 +9,6 @@
     <ItemGroup>
       <ProjectReference Include="..\SocialNetwork.Models\SocialNetwork.Models.csproj" />
       <ProjectReference Include="..\SocialNetwork.Tools.Ado\SocialNetwork.Tools.Ado.csproj" />
-      <ProjectReference Include="..\SocialNetwork.Tools.Cqs\SocialNetwork.Tools.Cqs.csproj" />
     </ItemGroup>
 
     <ItemGroup>

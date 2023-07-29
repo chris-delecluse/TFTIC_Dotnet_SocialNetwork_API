@@ -5,7 +5,6 @@ using SocialNetwork.Domain.Commands.Commands.Auth;
 using SocialNetwork.Domain.Queries.Queries.Auth;
 using SocialNetwork.Domain.Shared;
 using SocialNetwork.Models;
-using SocialNetwork.Tools.Cqs.Shared;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Infrastructures.Security;

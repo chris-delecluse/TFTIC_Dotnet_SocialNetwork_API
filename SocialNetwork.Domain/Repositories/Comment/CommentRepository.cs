@@ -4,7 +4,6 @@ using SocialNetwork.Domain.Mappers;
 using SocialNetwork.Domain.Queries.Queries.Comment;
 using SocialNetwork.Models;
 using SocialNetwork.Tools.Ado;
-using SocialNetwork.Tools.Cqs.Shared;
 
 namespace SocialNetwork.Domain.Repositories.Comment;
 
@@ -17,21 +16,14 @@ public class CommentRepository : ICommentRepository
         _dbConnection = dbConnection;
     }
 
-    public Task<ICommandResult<int>> Insert(CommentCommand command)
+    public Task<int> Insert(CommentCommand command)
     {
-        try
-        {
-            if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
-            int commentId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddComment", true, command));
+        int commentId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddComment", true, command));
 
-            _dbConnection.Close();
-            return Task.FromResult(ICommandResult<int>.Success(commentId));
-        }
-        catch (Exception e)
-        {
-            return Task.FromResult(ICommandResult<int>.Failure(e.Message));
-        }
+        _dbConnection.Close();
+        return Task.FromResult(commentId);
     }
 
     public Task<IEnumerable<CommentModel>> Find(CommentListByPostQuery query)

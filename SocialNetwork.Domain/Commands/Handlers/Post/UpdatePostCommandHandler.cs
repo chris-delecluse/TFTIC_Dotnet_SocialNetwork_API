@@ -1,7 +1,7 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Post;
 using SocialNetwork.Domain.Repositories.Post;
-using SocialNetwork.Tools.Cqs.Shared;
+using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Post;
 
@@ -16,6 +16,14 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, IComm
 
     public async Task<ICommandResult> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
     {
-        return await _postRepository.Update(request);
+        try
+        {
+             await _postRepository.Update(request);
+             return CommandResult.Success();
+        }
+        catch (Exception e)
+        {
+            return CommandResult.Failure(e.Message);
+        }
     }
 }

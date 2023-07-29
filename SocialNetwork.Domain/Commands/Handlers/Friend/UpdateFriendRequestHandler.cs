@@ -1,7 +1,7 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Friend;
 using SocialNetwork.Domain.Repositories.Friend;
-using SocialNetwork.Tools.Cqs.Shared;
+using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Friend;
 
@@ -16,6 +16,14 @@ public class UpdateFriendRequestHandler : IRequestHandler<UpdateFriendRequestCom
 
     public async Task<ICommandResult> Handle(UpdateFriendRequestCommand request, CancellationToken cancellationToken)
     {
-        return await _friendRepository.Update(request);
+        try
+        {
+            await _friendRepository.Update(request);
+            return CommandResult.Success();
+        }
+        catch (Exception e)
+        {
+            return CommandResult.Failure(e.Message);
+        }
     }
 }

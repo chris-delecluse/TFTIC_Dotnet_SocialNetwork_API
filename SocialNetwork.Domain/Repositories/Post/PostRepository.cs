@@ -2,9 +2,9 @@ using System.Data;
 using SocialNetwork.Domain.Commands.Commands.Post;
 using SocialNetwork.Domain.Mappers;
 using SocialNetwork.Domain.Queries.Queries.Post;
+using SocialNetwork.Domain.Shared;
 using SocialNetwork.Models;
 using SocialNetwork.Tools.Ado;
-using SocialNetwork.Tools.Cqs.Shared;
 
 namespace SocialNetwork.Domain.Repositories.Post;
 
@@ -17,39 +17,53 @@ public class PostRepository : IPostRepository
         _dbConnection = dbConnection;
     }
 
-    public Task<ICommandResult<int>> Insert(PostCommand command)
+    public Task<int> Insert(PostCommand command)
     {
-        try
-        {
-            if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+        // try
+        // {
+        //     if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+        //
+        //     int postId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddPost", true, command));
+        //
+        //     _dbConnection.Close();
+        //     return Task.FromResult(ICommandResult<int>.Success(postId));
+        // }
+        // catch (Exception e)
+        // {
+        //     return Task.FromResult(ICommandResult<int>.Failure(e.Message));
+        // }
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
-            int postId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddPost", true, command));
+        int postId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddPost", true, command));
 
-            _dbConnection.Close();
-            return Task.FromResult(ICommandResult<int>.Success(postId));
-        }
-        catch (Exception e)
-        {
-            return Task.FromResult(ICommandResult<int>.Failure(e.Message));
-        }
+        _dbConnection.Close();
+        return Task.FromResult(postId);
     }
 
-    public Task<ICommandResult> Update(UpdatePostCommand command)
+    public Task Update(UpdatePostCommand command)
     {
-        try
-        {
-            if (_dbConnection.State is not ConnectionState.Open) 
-                _dbConnection.Open();
+        // try
+        // {
+        //     if (_dbConnection.State is not ConnectionState.Open) 
+        //         _dbConnection.Open();
+        //
+        //     _dbConnection.ExecuteNonQuery("CSP_UpdateIsDeletedPost", true, command);
+        //
+        //     _dbConnection.Close();
+        //     return Task.FromResult(ICommandResult.Success());
+        // }
+        // catch (Exception e)
+        // {
+        //     return Task.FromResult(ICommandResult.Failure(e.Message));
+        // }
+        
+        if (_dbConnection.State is not ConnectionState.Open) 
+            _dbConnection.Open();
 
-            _dbConnection.ExecuteNonQuery("CSP_UpdateIsDeletedPost", true, command);
+        _dbConnection.ExecuteNonQuery("CSP_UpdateIsDeletedPost", true, command);
 
-            _dbConnection.Close();
-            return Task.FromResult(ICommandResult.Success());
-        }
-        catch (Exception e)
-        {
-            return Task.FromResult(ICommandResult.Failure(e.Message));
-        }
+        _dbConnection.Close();
+        return Task.CompletedTask;
     }
 
     public Task<IEnumerable<IGrouping<IPost, PostModel>>> Find(PostListQuery query)
