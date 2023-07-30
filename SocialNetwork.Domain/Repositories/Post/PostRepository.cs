@@ -18,19 +18,6 @@ public class PostRepository : IPostRepository
 
     public Task<int> Insert(PostCommand command)
     {
-        // try
-        // {
-        //     if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
-        //
-        //     int postId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddPost", true, command));
-        //
-        //     _dbConnection.Close();
-        //     return Task.FromResult(ICommandResult<int>.Success(postId));
-        // }
-        // catch (Exception e)
-        // {
-        //     return Task.FromResult(ICommandResult<int>.Failure(e.Message));
-        // }
         if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
         int postId = Convert.ToInt32(_dbConnection.ExecuteScalar("CSP_AddPost", true, command));
@@ -41,21 +28,6 @@ public class PostRepository : IPostRepository
 
     public Task Update(UpdatePostCommand command)
     {
-        // try
-        // {
-        //     if (_dbConnection.State is not ConnectionState.Open) 
-        //         _dbConnection.Open();
-        //
-        //     _dbConnection.ExecuteNonQuery("CSP_UpdateIsDeletedPost", true, command);
-        //
-        //     _dbConnection.Close();
-        //     return Task.FromResult(ICommandResult.Success());
-        // }
-        // catch (Exception e)
-        // {
-        //     return Task.FromResult(ICommandResult.Failure(e.Message));
-        // }
-        
         if (_dbConnection.State is not ConnectionState.Open) 
             _dbConnection.Open();
 

@@ -18,28 +18,6 @@ public class FriendRepository : IFriendRepository
 
     public Task Insert(FriendCommand command)
     {
-        // try
-        // {
-        //     if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
-        //
-        //     _dbConnection.ExecuteNonQuery("CSP_AddFriend",
-        //         true,
-        //         new
-        //         {
-        //             command.RequestId,
-        //             command.ResponderId,
-        //             State = Enum.GetName(typeof(EFriendState), command.State)
-        //         }
-        //     );
-        //
-        //     _dbConnection.Close();
-        //     return Task.FromResult(ICommandResult.Success());
-        // }
-        // catch (Exception e)
-        // { 
-        //     return Task.FromResult(ICommandResult.Failure(e.Message));
-        // }
-        
         if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
         
         _dbConnection.ExecuteNonQuery("CSP_AddFriend",
@@ -58,28 +36,6 @@ public class FriendRepository : IFriendRepository
 
     public Task Update(UpdateFriendRequestCommand command)
     {
-        // try
-        // {
-        //     if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
-        //
-        //     _dbConnection.ExecuteNonQuery("CSP_UpdateFriendRequestStatus",
-        //         true,
-        //         new
-        //         {
-        //             command.RequestId,
-        //             command.ResponderId,
-        //             State = Enum.GetName(typeof(EFriendState), command.State)
-        //         }
-        //     );
-        //
-        //     _dbConnection.Close();
-        //     return Task.FromResult(ICommandResult.Success());
-        // }
-        // catch (Exception e)
-        // {
-        //     return Task.FromResult(ICommandResult.Failure(e.Message));
-        // }
-        
         if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
         _dbConnection.ExecuteNonQuery("CSP_UpdateFriendRequestStatus",
@@ -125,20 +81,6 @@ public class FriendRepository : IFriendRepository
 
     public Task Remove(RemoveFriendCommand command)
     {
-        // try
-        // {
-        //     if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
-        //
-        //     _dbConnection.ExecuteNonQuery("CSP_RemoveFriend", true, command);
-        //     
-        //     _dbConnection.Close();
-        //     return Task.FromResult(ICommandResult.Success());
-        // }
-        // catch (Exception e)
-        // {
-        //     return Task.FromResult(ICommandResult.Failure(e.Message));
-        // }
-        
         if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
 
         _dbConnection.ExecuteNonQuery("CSP_RemoveFriend", true, command);
