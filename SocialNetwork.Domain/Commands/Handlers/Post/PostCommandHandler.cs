@@ -1,7 +1,6 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Post;
 using SocialNetwork.Domain.Repositories.Post;
-using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Post;
 
@@ -19,7 +18,7 @@ public class PostCommandHandler : IRequestHandler<PostCommand, ICommandResult<in
         try
         {
             int result = await _postRepository.Insert(request);
-            return CommandResult<int>.Success(result);
+            return CommandResult<int>.Success(result, "Post Added successfully.");
         }
         catch (Exception e)
         {

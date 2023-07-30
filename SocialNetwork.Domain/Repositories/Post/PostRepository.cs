@@ -2,7 +2,6 @@ using System.Data;
 using SocialNetwork.Domain.Commands.Commands.Post;
 using SocialNetwork.Domain.Mappers;
 using SocialNetwork.Domain.Queries.Queries.Post;
-using SocialNetwork.Domain.Shared;
 using SocialNetwork.Models;
 using SocialNetwork.Tools.Ado;
 

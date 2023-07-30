@@ -1,5 +1,4 @@
 using MediatR;
-using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Commands.Auth;
 

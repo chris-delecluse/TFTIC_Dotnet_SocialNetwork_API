@@ -1,7 +1,6 @@
     using MediatR;
     using SocialNetwork.Domain.Commands.Commands.Auth;
     using SocialNetwork.Domain.Repositories.Auth;
-    using SocialNetwork.Domain.Shared;
 
     namespace SocialNetwork.Domain.Commands.Handlers.Auth;
 
@@ -19,7 +18,7 @@
             try
             {
                 await _authRepository.RegisterUser(request);
-                return CommandResult.Success();
+                return CommandResult.Success("User created successfully.");
             }
             catch (Exception)
             {

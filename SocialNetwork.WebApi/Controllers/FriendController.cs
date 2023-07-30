@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SocialNetwork.Domain.Commands;
 using SocialNetwork.Domain.Commands.Commands.Friend;
 using SocialNetwork.Domain.Queries.Queries.Friend;
-using SocialNetwork.Domain.Shared;
 using SocialNetwork.Models;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Infrastructures.Security;
@@ -27,47 +27,46 @@ public class FriendController : ControllerBase
     public async Task<IActionResult> Add(FriendForm form)
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
-        ICommandResult result = await _mediator.Send(new FriendCommand(user.Id, form.UserId, EFriendState.Pending));
+        ICommandResult command = await _mediator.Send(new FriendCommand(user.Id, form.UserId, EFriendState.Pending));
 
-        if (result.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, result.Message));
+        if (command.IsFailure) 
+            return BadRequest(new ApiResponse(400, false, command.Message));
 
-        return Created("", new ApiResponse(201, true, "Friend request send successfully."));
+        return Created("", new ApiResponse(201, true, command.Message));
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
-        IEnumerable<FriendModel> friends = await _mediator.Send(new FriendListQuery(user.Id));
+        IEnumerable<FriendModel> query = await _mediator.Send(new FriendListQuery(user.Id));
 
-        return Ok(new ApiResponse(200, true, friends.ToFriendDto(), "Success"));
+        return Ok(new ApiResponse(200, true, query.ToFriendDto(), "Success"));
     }
 
     [HttpPatch]
     public async Task<IActionResult> Update(UpdateFriendRequestForm form)
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
-        ICommandResult result = await _mediator.Send(new UpdateFriendRequestCommand(form.RequestId,
-                user.Id,
+        ICommandResult command = await _mediator.Send(new UpdateFriendRequestCommand(form.RequestId, user.Id,
                 form.IsAccepted ? EFriendState.Accepted : EFriendState.Rejected
             )
         );
 
-        if (result.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, result.Message));
+        if (command.IsFailure) 
+            return BadRequest(new ApiResponse(400, false, command.Message));
 
-        return Accepted(new ApiResponse(202, true, "Friend request updated successfully."));
+        return Accepted(new ApiResponse(202, true, command.Message));
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Remove(int id)
     {
         UserInfo user = HttpContext.ExtractDataFromToken();
-        ICommandResult result = await _mediator.Send(new RemoveFriendCommand(user.Id, id));
+        ICommandResult command = await _mediator.Send(new RemoveFriendCommand(user.Id, id));
 
-        if (result.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, result.Message));
+        if (command.IsFailure) 
+            return BadRequest(new ApiResponse(400, false, command.Message));
 
         return NoContent();
     }

@@ -1,7 +1,6 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Friend;
 using SocialNetwork.Domain.Repositories.Friend;
-using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Friend;
 
@@ -24,7 +23,7 @@ public class FriendCommandHandler : IRequestHandler<FriendCommand, ICommandResul
         try
         { 
             await _friendRepository.Insert(request);
-            return CommandResult.Success();
+            return CommandResult.Success("Friend request send successfully.");
         }
         catch (Exception e)
         {

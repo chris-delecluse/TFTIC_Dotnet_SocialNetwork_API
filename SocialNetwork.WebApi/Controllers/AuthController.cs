@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SocialNetwork.Domain.Commands;
 using SocialNetwork.Domain.Commands.Commands.Auth;
 using SocialNetwork.Domain.Queries.Queries.Auth;
-using SocialNetwork.Domain.Shared;
 using SocialNetwork.Models;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
@@ -13,7 +13,6 @@ using SocialNetwork.WebApi.Models.Dtos.Auth;
 using SocialNetwork.WebApi.Models.Forms.Auth;
 using SocialNetwork.WebApi.Models.Mappers;
 using SocialNetwork.WebApi.SignalR.Interfaces;
-using ICommandResult = SocialNetwork.Domain.Shared.ICommandResult;
 
 namespace SocialNetwork.WebApi.Controllers;
 
@@ -41,27 +40,27 @@ public class AuthController : ControllerBase
     [HttpPost, Route("local/register"), AllowAnonymous]
     public async Task<IActionResult> Register(RegisterForm form)
     {
-        ICommandResult result =
+        ICommandResult command =
            await  _mediator.Send(new RegisterCommand(form.FirstName, form.LastName, form.Email, form.Password));
 
-        if (result.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, result.Message));
+        if (command.IsFailure) 
+            return BadRequest(new ApiResponse(400, false, command.Message));
 
-        return Created("", new ApiResponse(201, true, "User created successfully."));
+        return Created("", new ApiResponse(201, true, command.Message));
     }
 
     [HttpPost, Route("local/login"), AllowAnonymous]
     public async Task<IActionResult> Login(LoginForm form)
     {
-        IQueryResult<UserModel?> query = await _mediator.Send(new LoginQuery(form.Email, form.Password));
+        UserModel? query = await _mediator.Send(new LoginQuery(form.Email, form.Password));
 
-        if (query.Data is null || query.IsFailure) 
-            return Unauthorized(new ApiResponse(401, false, query.Message));
+        if (query is null) 
+            return Unauthorized(new ApiResponse(401, false, "Invalid credentials."));
 
-        LoginDto loginDto = query.Data.ToLoginDto(_tokenService.GenerateAccessToken(query.Data));
+        LoginDto loginDto = query.ToLoginDto(_tokenService.GenerateAccessToken(query));
 
-        _connectionState.AddUserToConnectedList(query.Data.Id);
-        await _authHubService.NotifyUserConnectedToFriends(query.Data);
+        _connectionState.AddUserToConnectedList(query.Id);
+        await _authHubService.NotifyUserConnectedToFriends(query);
         return Ok(new ApiResponse(200, true, loginDto, "Success"));
     }
 

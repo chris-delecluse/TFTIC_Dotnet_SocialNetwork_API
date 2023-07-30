@@ -1,4 +1,4 @@
-namespace SocialNetwork.Domain.Shared;
+namespace SocialNetwork.Domain.Commands;
 
 public interface ICommandResult
 {

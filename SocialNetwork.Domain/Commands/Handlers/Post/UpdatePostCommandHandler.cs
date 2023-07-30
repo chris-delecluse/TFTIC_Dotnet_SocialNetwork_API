@@ -1,7 +1,6 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Post;
 using SocialNetwork.Domain.Repositories.Post;
-using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Post;
 

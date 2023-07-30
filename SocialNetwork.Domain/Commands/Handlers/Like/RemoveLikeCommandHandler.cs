@@ -1,7 +1,6 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Like;
 using SocialNetwork.Domain.Repositories.Like;
-using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Like;
 

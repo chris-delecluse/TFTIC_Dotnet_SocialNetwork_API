@@ -1,6 +1,5 @@
 using SocialNetwork.Domain.Commands.Commands.Post;
 using SocialNetwork.Domain.Queries.Queries.Post;
-using SocialNetwork.Domain.Shared;
 using SocialNetwork.Models;
 
 namespace SocialNetwork.Domain.Repositories.Post;

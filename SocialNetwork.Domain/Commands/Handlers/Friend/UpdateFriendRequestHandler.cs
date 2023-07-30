@@ -1,7 +1,6 @@
 using MediatR;
 using SocialNetwork.Domain.Commands.Commands.Friend;
 using SocialNetwork.Domain.Repositories.Friend;
-using SocialNetwork.Domain.Shared;
 
 namespace SocialNetwork.Domain.Commands.Handlers.Friend;
 
@@ -19,7 +18,7 @@ public class UpdateFriendRequestHandler : IRequestHandler<UpdateFriendRequestCom
         try
         {
             await _friendRepository.Update(request);
-            return CommandResult.Success();
+            return CommandResult.Success("Friend request updated successfully.");
         }
         catch (Exception e)
         {

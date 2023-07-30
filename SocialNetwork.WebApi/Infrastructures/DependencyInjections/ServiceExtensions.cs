@@ -36,7 +36,6 @@ internal static class ServiceExtensions
         service.AddScoped<ICommentHubService, CommentHubService>();
         
         service.AddSignalR();
-        
         service.AddMediatR(opt => opt.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
         AppDomain.CurrentDomain.GetAssemblies()
