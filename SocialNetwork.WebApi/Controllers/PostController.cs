@@ -9,11 +9,11 @@ using SocialNetwork.Domain.Queries.Queries.Comment;
 using SocialNetwork.Domain.Queries.Queries.Post;
 using SocialNetwork.Models;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
-using SocialNetwork.WebApi.Infrastructures.Security;
-using SocialNetwork.WebApi.Models;
+using SocialNetwork.WebApi.Models.Dtos;
 using SocialNetwork.WebApi.Models.Forms.Comment;
 using SocialNetwork.WebApi.Models.Forms.Post;
 using SocialNetwork.WebApi.Models.Mappers;
+using SocialNetwork.WebApi.Models.Models;
 using SocialNetwork.WebApi.SignalR.Interfaces;
 using SocialNetwork.WebApi.SignalR.Tools;
 
@@ -60,23 +60,23 @@ public class PostController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddPost(PostForm form)
     {
-        UserInfo user = HttpContext.ExtractDataFromToken();
-        ICommandResult<int> command = await _mediator.Send(new PostCommand(form.Content, user.Id));
+        TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
+        ICommandResult<int> command = await _mediator.Send(new PostCommand(form.Content, tokenUser.Id));
 
         if (command.IsFailure) 
             return BadRequest(new ApiResponse(400, false, command.Message));
 
         IEnumerable<IGrouping<IPost, PostModel>> hubResponse = await _mediator.Send(new PostQuery(command.Data, false));
 
-        await _postHubService.NotifyNewPostToFriends(user, new HubResponse("new_post", hubResponse.First().ToPostDto()));
+        await _postHubService.NotifyNewPostToFriends(tokenUser, new HubResponse("new_post", hubResponse.First().ToPostDto()));
         return Created("", new ApiResponse(201, true, command.Message));
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> RemovePost(int id)
     {
-        UserInfo user = HttpContext.ExtractDataFromToken();
-        ICommandResult command = await _mediator.Send(new UpdatePostCommand(id, user.Id, true));
+        TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
+        ICommandResult command = await _mediator.Send(new UpdatePostCommand(id, tokenUser.Id, true));
 
         if (command.IsFailure) 
             return BadRequest(new ApiResponse(400, false, command.Message));
@@ -95,27 +95,27 @@ public class PostController : ControllerBase
     [HttpPost("{id}/comment")]
     public async Task<IActionResult> AddPostComment(int id, CommentForm form)
     {
-        UserInfo user = HttpContext.ExtractDataFromToken();
-        ICommandResult<int> command = await _mediator.Send(new CommentCommand(form.Content, id, user.Id));
+        TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
+        ICommandResult<int> command = await _mediator.Send(new CommentCommand(form.Content, id, tokenUser.Id));
         object hubMessage = new { Id = command.Data, PostId = id, form.Content };
 
         if (command.IsFailure) 
             return BadRequest(new ApiResponse(400, false, command.Message));
 
-        await _commentHubService.NotifyNewCommentToPost(user, id, new HubResponse("add_comment", hubMessage));
+        await _commentHubService.NotifyNewCommentToPost(tokenUser, id, new HubResponse("add_comment", hubMessage));
         return Created("", new ApiResponse(201, true, command.Message));
     }
 
     [HttpPost("{id}/like")]
     public async Task<IActionResult> AddPostLike(int id)
     {
-        UserInfo user = HttpContext.ExtractDataFromToken();
-        ICommandResult command = await _mediator.Send(new LikeCommand(id, user.Id));
+        TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
+        ICommandResult command = await _mediator.Send(new LikeCommand(id, tokenUser.Id));
 
         if (command.IsFailure) 
             return BadRequest(new ApiResponse(400, false, command.Message));
 
-        var hubResponse = new { user.Id, user.FirstName, user.LastName, PostId = id };
+        var hubResponse = new { tokenUser.Id, tokenUser.FirstName, tokenUser.LastName, PostId = id };
 
         await _postHubService.NotifyLikeToPost(id, new HubResponse("new_like", hubResponse));
         return Created("", new ApiResponse(201, true, command.Message));
@@ -124,8 +124,8 @@ public class PostController : ControllerBase
     [HttpDelete("{id}/like")]
     public async Task<IActionResult> RemovePostLike(int id)
     {
-        UserInfo user = HttpContext.ExtractDataFromToken();
-        ICommandResult command = await _mediator.Send(new RemoveLikeCommand(id, user.Id));
+        TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
+        ICommandResult command = await _mediator.Send(new RemoveLikeCommand(id, tokenUser.Id));
 
         if (command.IsFailure) 
             return BadRequest(new ApiResponse(400, false, command.Message));

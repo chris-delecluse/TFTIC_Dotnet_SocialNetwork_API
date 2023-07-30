@@ -1,9 +1,8 @@
 using System.Text.Json;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.Domain.Repositories;
 using SocialNetwork.Models;
-using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.Models.Models;
 using SocialNetwork.WebApi.SignalR.Extensions;
 using SocialNetwork.WebApi.SignalR.Hubs;
 using SocialNetwork.WebApi.SignalR.Tools;
@@ -27,9 +26,9 @@ public class PostHubService : FriendListHubTools, IPostHubService
         _likeHubContext = likeHubContext;
     }
 
-    public async Task NotifyNewPostToFriends<T>(UserInfo user, T dataToSend)
+    public async Task NotifyNewPostToFriends<T>(TokenUserInfo tokenUser, T dataToSend)
     {
-        foreach (FriendModel friend in await GetUserFriendList(user.Id))
+        foreach (FriendModel friend in await GetUserFriendList(tokenUser.Id))
         {
             string groupName = $"PostGroup_{friend.ResponderId}";
             await _postHubContext.AddToGroup(groupName);

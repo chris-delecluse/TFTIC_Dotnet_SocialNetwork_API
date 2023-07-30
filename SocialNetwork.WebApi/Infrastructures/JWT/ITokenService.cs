@@ -1,6 +1,6 @@
 using SocialNetwork.Models;
 
-namespace SocialNetwork.WebApi.Infrastructures.Security;
+namespace SocialNetwork.WebApi.Infrastructures.JWT;
 
 public interface ITokenService
 {

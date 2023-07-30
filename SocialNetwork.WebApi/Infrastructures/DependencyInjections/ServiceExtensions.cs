@@ -11,7 +11,7 @@ using SocialNetwork.Domain.Repositories.Friend;
 using SocialNetwork.Domain.Repositories.Like;
 using SocialNetwork.Domain.Repositories.Post;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
-using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.Infrastructures.JWT;
 using SocialNetwork.WebApi.SignalR.Interfaces;
 using SocialNetwork.WebApi.SignalR.Services;
 

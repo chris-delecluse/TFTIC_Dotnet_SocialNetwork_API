@@ -1,4 +1,4 @@
-namespace SocialNetwork.WebApi.Models;
+namespace SocialNetwork.WebApi.Models.Dtos;
 
 public class ApiResponse
 {

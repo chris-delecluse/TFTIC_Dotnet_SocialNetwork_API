@@ -2,7 +2,7 @@ using System.Text.Json;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Domain.Queries.Queries.Comment;
-using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.Models.Models;
 using SocialNetwork.WebApi.SignalR.Extensions;
 using SocialNetwork.WebApi.SignalR.Hubs;
 using SocialNetwork.WebApi.SignalR.Interfaces;
@@ -23,7 +23,7 @@ public class CommentHubService : ICommentHubService
         _mediator = mediator;
     }
 
-    public async Task NotifyNewCommentToPost<T>(UserInfo user, int postId, T dataToSend)
+    public async Task NotifyNewCommentToPost<T>(TokenUserInfo tokenUser, int postId, T dataToSend)
     {
         foreach (int targetUserId in await GetUserIdsFromCommentBasedOnPostId(postId))
         {

@@ -2,7 +2,7 @@ using System.Text.Json;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Models;
-using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.Models.Models;
 using SocialNetwork.WebApi.SignalR.Tools;
 using SocialNetwork.WebApi.SignalR.Interfaces;
 using SocialNetwork.WebApi.SignalR.Extensions;
@@ -35,14 +35,14 @@ public class AuthHubService : FriendListHubTools, IAuthHubService
         }
     }
 
-    public async Task NotifyUserDisConnectedToFriends(UserInfo user)
+    public async Task NotifyUserDisConnectedToFriends(TokenUserInfo tokenUser)
     {
-        foreach (FriendModel friend in await GetUserFriendList(user.Id))
+        foreach (FriendModel friend in await GetUserFriendList(tokenUser.Id))
         {
             string groupName = $"FriendsGroup_{friend.ResponderId}";
             await _authContext.SendMessage(groupName,
                 JsonSerializer.Serialize(new HubResponse("DisConnection",
-                        $"{user.FirstName} {user.LastName} has disconnected !"
+                        $"{tokenUser.FirstName} {tokenUser.LastName} has disconnected !"
                     )
                 )
             );

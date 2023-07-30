@@ -7,11 +7,12 @@ using SocialNetwork.Domain.Queries.Queries.Auth;
 using SocialNetwork.Models;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
-using SocialNetwork.WebApi.Infrastructures.Security;
-using SocialNetwork.WebApi.Models;
+using SocialNetwork.WebApi.Infrastructures.JWT;
+using SocialNetwork.WebApi.Models.Dtos;
 using SocialNetwork.WebApi.Models.Dtos.Auth;
 using SocialNetwork.WebApi.Models.Forms.Auth;
 using SocialNetwork.WebApi.Models.Mappers;
+using SocialNetwork.WebApi.Models.Models;
 using SocialNetwork.WebApi.SignalR.Interfaces;
 
 namespace SocialNetwork.WebApi.Controllers;
@@ -67,10 +68,10 @@ public class AuthController : ControllerBase
     [HttpPost, Route("local/logout"), Authorize]
     public async Task<IActionResult> Logout()
     {
-        UserInfo user = HttpContext.ExtractDataFromToken();
+        TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
 
-        _connectionState.RemoveUserToConnectedList(user.Id);
-        await _authHubService.NotifyUserDisConnectedToFriends(user);
+        _connectionState.RemoveUserToConnectedList(tokenUser.Id);
+        await _authHubService.NotifyUserDisConnectedToFriends(tokenUser);
         return Ok(new ApiResponse(200, true, "User logout successfully."));
     }
 }

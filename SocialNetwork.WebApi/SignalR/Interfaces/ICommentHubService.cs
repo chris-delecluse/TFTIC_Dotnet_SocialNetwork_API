@@ -1,8 +1,8 @@
-using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.Models.Models;
 
 namespace SocialNetwork.WebApi.SignalR.Interfaces;
 
 public interface ICommentHubService
 {
-    Task NotifyNewCommentToPost<T>(UserInfo user, int postId, T dataToSend);
+    Task NotifyNewCommentToPost<T>(TokenUserInfo tokenUser, int postId, T dataToSend);
 }

@@ -1,10 +1,10 @@
 using SocialNetwork.Models;
-using SocialNetwork.WebApi.Infrastructures.Security;
+using SocialNetwork.WebApi.Models.Models;
 
 namespace SocialNetwork.WebApi.SignalR.Interfaces;
 
 public interface IAuthHubService
 {
     Task NotifyUserConnectedToFriends(UserModel userModel);
-    Task NotifyUserDisConnectedToFriends(UserInfo user);
+    Task NotifyUserDisConnectedToFriends(TokenUserInfo tokenUser);
 }
