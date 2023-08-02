@@ -12,6 +12,7 @@ using SocialNetwork.Domain.Repositories.Like;
 using SocialNetwork.Domain.Repositories.Post;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.JWT;
+using SocialNetwork.WebApi.Infrastructures.Users;
 using SocialNetwork.WebApi.SignalR.Interfaces;
 using SocialNetwork.WebApi.SignalR.Services;
 
@@ -23,6 +24,8 @@ internal static class ServiceExtensions
     {
         service.AddSingleton<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("Default")));
         service.AddSingleton<IUserConnectionState, UserConnectionState>();
+        // V2
+        service.AddSingleton<IConnectedUserManager, ConnectedUserManager>();
         
         service.AddScoped<IAuthRepository, AuthRepository>();
         service.AddScoped<IFriendRepository, FriendRepository>();

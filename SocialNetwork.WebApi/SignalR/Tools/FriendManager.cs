@@ -4,11 +4,11 @@ using SocialNetwork.Models;
 
 namespace SocialNetwork.WebApi.SignalR.Tools;
 
-public abstract class FriendListHubTools
+public abstract class FriendManager
 {
     private readonly IMediator _mediator;
 
-    protected FriendListHubTools(IMediator mediator)
+    protected FriendManager(IMediator mediator)
     {
         _mediator = mediator;
     }

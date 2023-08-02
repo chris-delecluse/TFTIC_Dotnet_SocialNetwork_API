@@ -5,9 +5,9 @@ using SocialNetwork.Domain.Commands;
 using SocialNetwork.Domain.Commands.Commands.Auth;
 using SocialNetwork.Domain.Queries.Queries.Auth;
 using SocialNetwork.Models;
-using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.Extensions;
 using SocialNetwork.WebApi.Infrastructures.JWT;
+using SocialNetwork.WebApi.Infrastructures.Users;
 using SocialNetwork.WebApi.Models.Dtos;
 using SocialNetwork.WebApi.Models.Dtos.Auth;
 using SocialNetwork.WebApi.Models.Forms.Auth;
@@ -22,20 +22,20 @@ public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ITokenService _tokenService;
-    private readonly IUserConnectionState _connectionState;
+    private readonly IConnectedUserManager _connectedUserManager;
     private readonly IAuthHubService _authHubService;
 
     public AuthController(
+        IMediator mediator,
         ITokenService tokenService,
-        IUserConnectionState connectionState,
-        IAuthHubService authHubService,
-        IMediator mediator
+        IConnectedUserManager connectedUserManager,
+        IAuthHubService authHubService
     )
     {
-        _tokenService = tokenService;
-        _connectionState = connectionState;
-        _authHubService = authHubService;
         _mediator = mediator;
+        _tokenService = tokenService;
+        _connectedUserManager = connectedUserManager;
+        _authHubService = authHubService;
     }
 
     [HttpPost, Route("local/register"), AllowAnonymous]
@@ -59,9 +59,9 @@ public class AuthController : ControllerBase
             return Unauthorized(new ApiResponse(401, false, "Invalid credentials."));
 
         LoginDto loginDto = query.ToLoginDto(_tokenService.GenerateAccessToken(query));
-
-        _connectionState.AddUserToConnectedList(query.Id);
-        await _authHubService.NotifyUserConnectedToFriends(query);
+        
+        _connectedUserManager.AddUserToConnectedList(query.Id, form.WebSocketId ?? "null", query.FirstName, query.LastName);
+        await _authHubService.NotifyClientUserConnected(query);
         return Ok(new ApiResponse(200, true, loginDto, "Success"));
     }
 
@@ -70,8 +70,8 @@ public class AuthController : ControllerBase
     {
         TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
 
-        _connectionState.RemoveUserToConnectedList(tokenUser.Id);
-        await _authHubService.NotifyUserDisConnectedToFriends(tokenUser);
+        _connectedUserManager.RemoveUserToConnectedList(tokenUser.Id);
+        await _authHubService.NotifyClientUserDisconnected(tokenUser);
         return Ok(new ApiResponse(200, true, "User logout successfully."));
     }
 }

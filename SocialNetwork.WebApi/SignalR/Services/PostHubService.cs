@@ -10,7 +10,7 @@ using SocialNetwork.WebApi.SignalR.Interfaces;
 
 namespace SocialNetwork.WebApi.SignalR.Services;
 
-public class PostHubService : FriendListHubTools, IPostHubService
+public class PostHubService : FriendManager, IPostHubService
 {
     private readonly IHubContext<PostHub, IClientHub> _postHubContext;
     private readonly IHubContext<LikeHub, IClientHub> _likeHubContext;

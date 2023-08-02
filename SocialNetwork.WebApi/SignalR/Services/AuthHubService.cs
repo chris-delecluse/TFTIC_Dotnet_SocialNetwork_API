@@ -1,52 +1,54 @@
-using System.Text.Json;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Models;
+using SocialNetwork.WebApi.Infrastructures.Users;
 using SocialNetwork.WebApi.Models.Models;
 using SocialNetwork.WebApi.SignalR.Tools;
 using SocialNetwork.WebApi.SignalR.Interfaces;
-using SocialNetwork.WebApi.SignalR.Extensions;
 using SocialNetwork.WebApi.SignalR.Hubs;
+using SocialNetwork.WebApi.SignalR.TypedHubs;
 
 namespace SocialNetwork.WebApi.SignalR.Services;
 
-public class AuthHubService : FriendListHubTools, IAuthHubService
+public class AuthHubService : FriendManager, IAuthHubService
 {
-    private readonly IHubContext<AuthHub, IClientHub> _authContext;
+    private readonly IHubContext<AuthHub, IAuthClientHub> _context;
+    private readonly IConnectedUserManager _connectedUserManager;
 
-    public AuthHubService(IMediator mediator, IHubContext<AuthHub, IClientHub> authContext) :
+    public AuthHubService(
+        IMediator mediator,
+        IHubContext<AuthHub, IAuthClientHub> context,
+        IConnectedUserManager connectedUserManager
+    ) :
         base(mediator)
     {
-        _authContext = authContext;
+        _context = context;
+        _connectedUserManager = connectedUserManager;
     }
-
-    public async Task NotifyUserConnectedToFriends(UserModel userModel)
+    
+    public async Task NotifyClientUserConnected(UserModel userModel)
     {
-        foreach (FriendModel friend in await GetUserFriendList(userModel.Id))
+        IEnumerable<FriendModel> friends = await GetUserFriendList(userModel.Id);
+
+        foreach (FriendModel friend in friends)
         {
-            string groupName = $"FriendsGroup_{friend.ResponderId}";
-            await _authContext.AddToGroup(groupName);
-            await _authContext.SendMessage(groupName,
-                JsonSerializer.Serialize(new HubResponse("Connection",
-                        $"{userModel.FirstName} {userModel.LastName} has connected !"
-                    )
-                )
-            );
+            ConnectedUser? user = _connectedUserManager[friend.RequestId];
+            
+            if (user is not null && friend.RequestId != userModel.Id)
+                await _context.Clients.Client(user.ContextId).OnApiConnectedAsync($"{userModel.FirstName} {userModel.LastName} has connected.");
         }
     }
 
-    public async Task NotifyUserDisConnectedToFriends(TokenUserInfo tokenUser)
+    public async Task NotifyClientUserDisconnected(TokenUserInfo token)
     {
-        foreach (FriendModel friend in await GetUserFriendList(tokenUser.Id))
+        IEnumerable<FriendModel> friends = await GetUserFriendList(token.Id);
+
+        foreach (FriendModel friend in friends)
         {
-            string groupName = $"FriendsGroup_{friend.ResponderId}";
-            await _authContext.SendMessage(groupName,
-                JsonSerializer.Serialize(new HubResponse("DisConnection",
-                        $"{tokenUser.FirstName} {tokenUser.LastName} has disconnected !"
-                    )
-                )
-            );
-            await _authContext.RemoveToGroup(groupName);
+            ConnectedUser? userTarget = _connectedUserManager[friend.Id];
+            
+            if (userTarget is not null)
+                await _context.Clients.User(userTarget.ContextId).OnApiDisConnectedAsync($"{token.FirstName} {token.LastName} has connected.");
         }
     }
 }

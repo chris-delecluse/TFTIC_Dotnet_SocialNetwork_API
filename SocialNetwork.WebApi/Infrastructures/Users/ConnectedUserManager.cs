@@ -6,13 +6,14 @@ public class ConnectedUserManager : IConnectedUserManager
 {
     private readonly Dictionary<int, ConnectedUser> _connectedUserDictionary;
     
-    public ConnectedUser this[int id]
+    public ConnectedUser? this[int id]
     {
         get
         {
             if (_connectedUserDictionary.TryGetValue(id, out var user))
                 return user;
-            throw new KeyNotFoundException($"No user with ID '{id}' found.");
+
+            return null;
         }
     }
 

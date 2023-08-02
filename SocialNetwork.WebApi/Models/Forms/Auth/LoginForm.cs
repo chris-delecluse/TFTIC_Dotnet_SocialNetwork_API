@@ -10,4 +10,7 @@ public class LoginForm
 
     [Required]
     public string Password { get; init; }
+#nullable enable
+
+    public string? WebSocketId { get; init; }
 }
