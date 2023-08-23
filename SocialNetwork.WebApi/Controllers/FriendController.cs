@@ -24,10 +24,10 @@ public class FriendController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(FriendForm form)
+    public async Task<IActionResult> Add(FriendRequestForm requestForm)
     {
         TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
-        ICommandResult command = await _mediator.Send(new FriendCommand(tokenUser.Id, form.UserId, EFriendState.Pending));
+        ICommandResult command = await _mediator.Send(new FriendCommand(tokenUser.Id, requestForm.UserId, EFriendState.Pending));
 
         if (command.IsFailure) 
             return BadRequest(new ApiResponse(400, false, command.Message));
@@ -35,12 +35,21 @@ public class FriendController : ControllerBase
         return Created("", new ApiResponse(201, true, command.Message));
     }
 
+    [HttpGet, Route("request")]
+    public async Task<IActionResult> GetFriendRequest()
+    {
+        TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
+        IEnumerable<FriendRequestModel> query = await _mediator.Send(new FriendRequestsQuery(tokenUser.Id));
+
+        return Ok(new ApiResponse(200, true, query.ToFriendRequestDto(), "Success"));
+    }
+
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> GetFriendList()
     {
         TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
         IEnumerable<FriendModel> query = await _mediator.Send(new FriendListQuery(tokenUser.Id));
-
+        
         return Ok(new ApiResponse(200, true, query.ToFriendDto(), "Success"));
     }
 

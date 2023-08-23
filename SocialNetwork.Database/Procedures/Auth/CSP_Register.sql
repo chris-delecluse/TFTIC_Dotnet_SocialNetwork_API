@@ -7,8 +7,7 @@ create procedure [dbo].[CSP_Register] @firstname nvarchar(50),
                                       @password nvarchar(20)
 as
 begin
-    begin transaction
-        insert into [Users] (firstname, lastname, email, [password])
-        values (@firstname, @lastname, @email,
-                HASHBYTES('SHA2_512', CONCAT(dbo.CSF_GetPreSalt(), @password, dbo.CSF_GetPostSalt())))
+    insert into [Users] (firstname, lastname, email, [password])
+    values (@firstname, @lastname, @email,
+            HASHBYTES('SHA2_512', CONCAT(dbo.CSF_GetPreSalt(), @password, dbo.CSF_GetPostSalt())))
 end

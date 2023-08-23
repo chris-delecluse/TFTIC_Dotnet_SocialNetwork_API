@@ -14,8 +14,8 @@ public class FriendListQueryHandler : IRequestHandler<FriendListQuery, IEnumerab
         _friendRepository = friendRepository;
     }
 
-    public async Task<IEnumerable<FriendModel>> Handle(FriendListQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<FriendModel>> Handle(FriendListQuery request, CancellationToken cancellationToken)
     {
-        return await _friendRepository.Find(request);
+        return _friendRepository.Find(request);
     }
 }

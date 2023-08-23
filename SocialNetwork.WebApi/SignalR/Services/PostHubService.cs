@@ -28,7 +28,7 @@ public class PostHubService : FriendManager, IPostHubService
 
     public async Task NotifyNewPostToFriends<T>(TokenUserInfo tokenUser, T dataToSend)
     {
-        foreach (FriendModel friend in await GetUserFriendList(tokenUser.Id))
+        foreach (FriendRequestModel friend in await GetUserFriendList(tokenUser.Id))
         {
             string groupName = $"PostGroup_{friend.ResponderId}";
             await _postHubContext.AddToGroup(groupName);

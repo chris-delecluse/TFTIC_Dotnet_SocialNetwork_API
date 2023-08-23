@@ -1,4 +1,4 @@
-use social_network
+use social_network;
 go
 
 create table [Users]

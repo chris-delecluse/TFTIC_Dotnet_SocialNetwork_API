@@ -2,25 +2,16 @@ namespace SocialNetwork.Models;
 
 public class FriendModel
 {
-    public int Id { get; init; }
-    public EFriendState State { get; init; }
-    public int RequestId { get; init; }
-    public int ResponderId { get; init; }
-    public DateTime CreatedAt { get; init; }
-
-    public FriendModel(int id, EFriendState state, int requestId, int responderId, DateTime createdAt)
+    public int Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    
+    //public string? ProfilePicture { get; set; }
+    // public string SignalRContextId { get; set; }
+    public FriendModel(int id, string firstName, string lastName)
     {
         Id = id;
-        State = state;
-        RequestId = requestId;
-        ResponderId = responderId;
-        CreatedAt = createdAt;
+        FirstName = firstName;
+        LastName = lastName;
     }
-}
-
-public enum EFriendState
-{
-    Pending,
-    Accepted, 
-    Rejected
 }

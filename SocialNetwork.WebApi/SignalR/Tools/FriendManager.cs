@@ -13,7 +13,7 @@ public abstract class FriendManager
         _mediator = mediator;
     }
 
-    protected Task<IEnumerable<FriendModel>> GetUserFriendList(int id)
+    protected Task<IEnumerable<FriendRequestModel>> GetUserFriendList(int id)
     {
         return _mediator.Send(new FriendListByStateQuery(id, EFriendState.Accepted));
     }

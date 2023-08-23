@@ -3,12 +3,12 @@ using SocialNetwork.Models;
 
 namespace SocialNetwork.Domain.Queries.Queries.Friend;
 
-public class FriendListQuery : IRequest<IEnumerable<FriendModel>>
+public class FriendListQuery:  IRequest<IEnumerable<FriendModel>>
 {
-    public int RequestId { get; init; }
+    public int UserId { get; set; }
 
-    public FriendListQuery(int requestId)
+    public FriendListQuery(int userId)
     {
-        RequestId = requestId;
+        UserId = userId;
     }
 }

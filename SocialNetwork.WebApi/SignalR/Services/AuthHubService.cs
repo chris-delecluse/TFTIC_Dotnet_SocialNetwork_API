@@ -28,9 +28,9 @@ public class AuthHubService : FriendManager, IAuthHubService
     
     public async Task NotifyClientUserConnected(UserModel userModel)
     {
-        IEnumerable<FriendModel> friends = await GetUserFriendList(userModel.Id);
+        IEnumerable<FriendRequestModel> friends = await GetUserFriendList(userModel.Id);
 
-        foreach (FriendModel friend in friends)
+        foreach (FriendRequestModel friend in friends)
         {
             ConnectedUser? user = _connectedUserManager[friend.RequestId];
             
@@ -41,9 +41,9 @@ public class AuthHubService : FriendManager, IAuthHubService
 
     public async Task NotifyClientUserDisconnected(TokenUserInfo token)
     {
-        IEnumerable<FriendModel> friends = await GetUserFriendList(token.Id);
+        IEnumerable<FriendRequestModel> friends = await GetUserFriendList(token.Id);
 
-        foreach (FriendModel friend in friends)
+        foreach (FriendRequestModel friend in friends)
         {
             ConnectedUser? userTarget = _connectedUserManager[friend.Id];
             

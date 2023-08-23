@@ -1,10 +1,17 @@
-use social_network
+use social_network;
 go
 
 create procedure [dbo].[CSP_GetFriendList](
-    @requestId int
+    @userId int
 )
 as
 begin
-    select * from [Friends] where requestId = @requestId or responderId = @requestId
+    select f.requestId   as userId,
+           f.responderId as friendId,
+           u.firstname   as friendFirstName,
+           u.lastName    as friendLastName
+    from [Friends] as f
+             inner join [Users] as u on f.responderId = u.id
+    where f.requestId = @userId
+      and f.state = 'Accepted';
 end

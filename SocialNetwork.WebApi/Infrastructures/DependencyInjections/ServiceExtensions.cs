@@ -60,7 +60,7 @@ internal static class ServiceExtensions
         {
             options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins("http://localhost:63343")
+                    builder.WithOrigins("http://localhost:4200")
                         .AllowAnyHeader()
                         .WithMethods("GET", "POST")
                         .AllowCredentials();

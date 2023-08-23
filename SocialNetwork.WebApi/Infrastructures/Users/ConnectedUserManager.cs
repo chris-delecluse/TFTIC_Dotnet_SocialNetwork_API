@@ -4,7 +4,7 @@ namespace SocialNetwork.WebApi.Infrastructures.Users;
 
 public class ConnectedUserManager : IConnectedUserManager
 {
-    private readonly Dictionary<int, ConnectedUser> _connectedUserDictionary;
+    private readonly Dictionary<int, ConnectedUser> _connectedUserDictionary = new();
     
     public ConnectedUser? this[int id]
     {
@@ -15,11 +15,6 @@ public class ConnectedUserManager : IConnectedUserManager
 
             return null;
         }
-    }
-
-    public ConnectedUserManager()
-    {
-        _connectedUserDictionary = new Dictionary<int, ConnectedUser>();
     }
 
     public IList<ConnectedUser> GetConnectedUsers() => _connectedUserDictionary.Values.ToList();

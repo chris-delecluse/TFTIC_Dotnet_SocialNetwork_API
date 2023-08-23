@@ -20,4 +20,7 @@ public class RegisterForm
              "The password must be at least 6 characters long and include at least one uppercase letter, one digit, and one special character."
      )]
     public string Password { get; init; }
+#nullable enable
+
+    public string? ProfilePictureUrl { get; init; }
 }
