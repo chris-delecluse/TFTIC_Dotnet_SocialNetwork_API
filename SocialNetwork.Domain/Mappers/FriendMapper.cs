@@ -19,6 +19,8 @@ internal static class FriendMapper
     internal static FriendModel ToFriend(this IDataRecord record) =>
         new((int)record["friendId"],
             (string)record["friendFirstName"],
-            (string)record["friendLastName"]
+            (string)record["friendLastName"],
+            Mapper.GetValueOrDefault<string>(record, "profilePicture")
         );
+
 }

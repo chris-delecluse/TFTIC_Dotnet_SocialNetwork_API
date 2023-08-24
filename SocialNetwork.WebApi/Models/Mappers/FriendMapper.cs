@@ -26,7 +26,7 @@ internal static class FriendMapper
     }
 
     internal static FriendDto ToFriendDto(this FriendModel friend) => 
-        new(friend.Id, friend.FirstName, friend.LastName);
+        new(friend.Id, friend.FirstName, friend.LastName, friend.ProfilePicture);
     
     internal static IEnumerable<FriendDto> ToFriendDto(this IEnumerable<FriendModel> friends)
     {

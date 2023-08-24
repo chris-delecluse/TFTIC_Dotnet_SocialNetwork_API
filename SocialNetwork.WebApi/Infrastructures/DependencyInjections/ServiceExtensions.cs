@@ -10,6 +10,7 @@ using SocialNetwork.Domain.Repositories.Comment;
 using SocialNetwork.Domain.Repositories.Friend;
 using SocialNetwork.Domain.Repositories.Like;
 using SocialNetwork.Domain.Repositories.Post;
+using SocialNetwork.Domain.Repositories.User;
 using SocialNetwork.WebApi.Infrastructures.AppStates;
 using SocialNetwork.WebApi.Infrastructures.JWT;
 using SocialNetwork.WebApi.Infrastructures.Users;
@@ -28,13 +29,14 @@ internal static class ServiceExtensions
         service.AddSingleton<IConnectedUserManager, ConnectedUserManager>();
         
         service.AddScoped<IAuthRepository, AuthRepository>();
+        service.AddScoped<IUserRepository, UserRepository>();
         service.AddScoped<IFriendRepository, FriendRepository>();
         service.AddScoped<IPostRepository, PostRepository>();
         service.AddScoped<ICommentRepository, CommentRepository>();
         service.AddScoped<ILikeRepository, LikeRepository>();
-        service.AddScoped<ITokenService, TokenService>();
         
         service.AddScoped<IAuthHubService, AuthHubService>();
+        service.AddScoped<ITokenService, TokenService>();
         service.AddScoped<IPostHubService, PostHubService>();
         service.AddScoped<ICommentHubService, CommentHubService>();
         
