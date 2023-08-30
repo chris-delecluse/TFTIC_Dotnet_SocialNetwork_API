@@ -3,9 +3,10 @@ go
 
 create table [UserProfiles]
 (
-    id                 int identity (1, 1),
-    userId             int not null unique,
+    id                 int identity (1, 1) not null,
+    userId             int                 not null unique,
     profilePicture     nvarchar(150),
+    backdropImage      nvarchar(150),
     gender             nvarchar(40),
     birthDate          datetime2(7),
     country            nvarchar(75),

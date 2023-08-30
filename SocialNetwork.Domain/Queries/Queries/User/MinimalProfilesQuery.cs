@@ -3,11 +3,11 @@ using SocialNetwork.Models;
 
 namespace SocialNetwork.Domain.Queries.Queries.User;
 
-public class MinimalUserProfileInfoQuery : IRequest<UserProfileModel>
+public class MinimalProfilesQuery : IRequest<IEnumerable<UserProfileModel>>
 {
     public int UserId { get; init; }
 
-    public MinimalUserProfileInfoQuery(int userId)
+    public MinimalProfilesQuery(int userId)
     {
         UserId = userId;
     }

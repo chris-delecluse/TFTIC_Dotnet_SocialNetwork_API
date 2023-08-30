@@ -5,16 +5,16 @@ using SocialNetwork.Models;
 
 namespace SocialNetwork.Domain.Queries.Handlers.User;
 
-public class UserProfileInfoQueryHandler: IRequestHandler<UserProfileInfoQuery, UserProfileModel>
+public class MinimalProfileQueryHandler: IRequestHandler<MinimalProfileQuery, UserProfileModel?>
 {
     private readonly IUserRepository _userRepository;
 
-    public UserProfileInfoQueryHandler(IUserRepository userRepository)
+    public MinimalProfileQueryHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
 
-    public async Task<UserProfileModel> Handle(UserProfileInfoQuery request, CancellationToken cancellationToken)
+    public async Task<UserProfileModel?> Handle(MinimalProfileQuery request, CancellationToken cancellationToken)
     {
         return await _userRepository.Find(request);
     }

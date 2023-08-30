@@ -77,6 +77,6 @@ public class FriendController : ControllerBase
         if (command.IsFailure) 
             return BadRequest(new ApiResponse(400, false, command.Message));
 
-        return NoContent();
+        return new ObjectResult(new ApiResponse(204, true, null) { StatusCode = 204 });
     }
 }

@@ -27,27 +27,52 @@ public class UserRepository : IUserRepository
         return Task.CompletedTask;
     }
 
-    public Task<UserProfileModel> Find(MinimalUserProfileInfoQuery query)
+    public Task<IEnumerable<UserProfileModel>> Find(MinimalProfilesQuery query)
+    {
+        if (_dbConnection.State is not ConnectionState.Open)
+            _dbConnection.Open();
+
+        IEnumerable<UserProfileModel> userProfile = _dbConnection
+            .ExecuteReader("CSP_GetMinimalProfileList", record => record.ToMinimalUserProfile(), true, query).ToList();
+
+        _dbConnection.Close();
+        return Task.FromResult(userProfile);
+    }
+
+    public Task<UserProfileModel> Find(MinimalProfileQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open)
             _dbConnection.Open();
 
         UserProfileModel userProfile = _dbConnection
-            .ExecuteReader("CSP_GetMinimalUserProfileInfo", record => record.ToMinimalUserProfile(), true, query)
+            .ExecuteReader("CSP_GetMinimalProfile", record => record.ToMinimalUserProfile(), true, query)
             .First();
 
         _dbConnection.Close();
         return Task.FromResult(userProfile);
     }
     
-    public Task<UserProfileModel> Find(UserProfileInfoQuery query)
+    public Task<UserProfileModel> Find(FullProfileQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open)
             _dbConnection.Open();
 
         UserProfileModel userProfile = _dbConnection
-            .ExecuteReader("CSP_GetUserProfileInfo", record => record.ToUserProfile(), true, query)
+            .ExecuteReader("CSP_GetFullProfile", record => record.ToUserProfile(), true, query)
             .First();
+
+        _dbConnection.Close();
+        return Task.FromResult(userProfile);
+    }
+
+    public Task<UserProfileModel> Find(FullPublicProfileQuery query)
+    {
+        if (_dbConnection.State is not ConnectionState.Open)
+            _dbConnection.Open();
+
+        UserProfileModel? userProfile = _dbConnection
+            .ExecuteReader("CSP_GetPublicProfileWithFriendStatus", record => record.ToUserPublicProfile(), true, query)
+            .FirstOrDefault();
 
         _dbConnection.Close();
         return Task.FromResult(userProfile);

@@ -6,6 +6,7 @@ create table [Friends]
     id          int identity (1, 1) not null,
     requestId   int                 not null,
     responderId int                 not null,
+    initiator   bit                 not null,
     state       nvarchar(20)        not null,
     createdAt   datetime2(7)        not null default (sysdatetime()),
 

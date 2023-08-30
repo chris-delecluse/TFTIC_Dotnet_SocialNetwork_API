@@ -7,6 +7,8 @@ namespace SocialNetwork.Domain.Repositories.User;
 public interface IUserRepository
 {
     Task Update(UpdateUserProfileInfoCommand command);
-    Task<UserProfileModel> Find(MinimalUserProfileInfoQuery query);
-    Task<UserProfileModel> Find(UserProfileInfoQuery query);
+    Task<IEnumerable<UserProfileModel>> Find(MinimalProfilesQuery query);
+    Task<UserProfileModel> Find(MinimalProfileQuery query);
+    Task<UserProfileModel> Find(FullProfileQuery query);
+    Task<UserProfileModel> Find(FullPublicProfileQuery query);
 }

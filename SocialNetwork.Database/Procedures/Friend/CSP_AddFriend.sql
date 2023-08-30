@@ -19,10 +19,13 @@ begin
 
     begin try
         begin transaction;
-        insert into [Friends] (requestId, responderId, state)
-        values (@requestId, @responderId, @state)
+        insert into [Friends] (requestId, responderId, state, initiator)
+        values (@requestId, @responderId, @state, 1)
 
         select SCOPE_IDENTITY()
+            
+        insert into [Friends] (requestId, responderId, state, initiator) 
+        values (@responderId, @requestId, @state, 0)
         commit transaction;
     end try
     begin catch

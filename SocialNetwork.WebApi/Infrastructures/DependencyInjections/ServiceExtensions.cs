@@ -23,7 +23,7 @@ internal static class ServiceExtensions
 {
     internal static IServiceCollection AddCustomServices(this IServiceCollection service, IConfiguration configuration)
     {
-        service.AddSingleton<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("Default")));
+        service.AddScoped<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("Default")));
         service.AddSingleton<IUserConnectionState, UserConnectionState>();
         // V2
         service.AddSingleton<IConnectedUserManager, ConnectedUserManager>();
@@ -64,7 +64,7 @@ internal static class ServiceExtensions
                 {
                     builder.WithOrigins("http://localhost:4200")
                         .AllowAnyHeader()
-                        .WithMethods("GET", "POST")
+                        .AllowAnyMethod()
                         .AllowCredentials();
                 });
         });
