@@ -13,6 +13,9 @@ internal static class PostMapper
                     p.Key.UserId,
                     p.Key.UserFirstName,
                     p.Key.UserLastName,
+                    p.Key.UserProfilePicture,
+                    p.Key.CommentCount,
+                    p.Key.LikesCount,
                     p.Key.CreatedAt
                 ),
                 p.Select(c => c.Id != 0 ? new CommentDto(c.Id, c.Content, c.CreatedAt, p.Key.Id, c.UserId) : null)
@@ -27,6 +30,9 @@ internal static class PostMapper
                 post.Key.UserId,
                 post.Key.UserFirstName,
                 post.Key.UserLastName,
+                post.Key.UserProfilePicture,
+                post.Key.CommentCount,
+                post.Key.LikesCount,
                 post.Key.CreatedAt
             ),
             post.Select(c => c.Id != 0 ? new CommentDto(c.Id, c.Content, c.CreatedAt, post.Key.Id, c.UserId) : null)

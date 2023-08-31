@@ -15,6 +15,9 @@ internal static class PostMapper
             Mapper.GetValueOrDefault<DateTime>(record, "postCreatedAt"),
             Mapper.GetValueOrDefault<int>(record, "postUserId"),
             Mapper.GetValueOrDefault<string>(record, "postUserFirstName"),
-            Mapper.GetValueOrDefault<string>(record, "postUserLastName")
+            Mapper.GetValueOrDefault<string>(record, "postUserLastName"),
+            Mapper.GetValueOrDefault<string>(record, "postUserProfilePicture"),
+            Mapper.GetValueOrDefault<int>(record, "likeCount"),
+            Mapper.GetValueOrDefault<int>(record, "commentCount")
         );
 }

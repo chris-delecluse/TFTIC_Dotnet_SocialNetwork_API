@@ -6,6 +6,7 @@ public class UpdateUserProfileInfoCommand : IRequest<ICommandResult>
 {
     public int UserId { get; init; }
     public string? ProfilePicture { get; set; }
+    public string? BackdropImage { get; set; }
     public string? Gender { get; set; }
     public DateTime? BirthDate { get; init; }
     public string? Country { get; init; }
@@ -14,6 +15,7 @@ public class UpdateUserProfileInfoCommand : IRequest<ICommandResult>
     public UpdateUserProfileInfoCommand(
         int userId,
         string? profilePicture,
+        string? backdropImage,
         string? gender,
         DateTime? birthDate,
         string? country,
@@ -22,6 +24,7 @@ public class UpdateUserProfileInfoCommand : IRequest<ICommandResult>
     {
         UserId = userId;
         ProfilePicture = profilePicture;
+        BackdropImage = backdropImage;
         Gender = gender;
         BirthDate = birthDate;
         Country = country;

@@ -91,6 +91,7 @@ public class UserController : ControllerBase
         TokenUserInfo user = HttpContext.ExtractDataFromToken();
         ICommandResult command = await _mediator.Send(new UpdateUserProfileInfoCommand(user.Id,
                 form.ProfilePicture,
+                form.BackdropImage,
                 form.Gender,
                 form.BirthDate,
                 form.Country,
