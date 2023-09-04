@@ -11,7 +11,7 @@ internal static class CommentMapper
         
         foreach (CommentModel model in comments)
         {
-            results.Add(new CommentDto(model.Id, model.Content, model.CreatedAt, model.PostId, model.UserId));
+            results.Add(new CommentDto(model.Id, model.Content, model.CreatedAt, model.PostId, model.UserId, model.CommentProfilePicture));
         }
 
         return results;

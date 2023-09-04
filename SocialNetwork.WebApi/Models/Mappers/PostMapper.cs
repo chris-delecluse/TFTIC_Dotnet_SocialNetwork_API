@@ -16,9 +16,10 @@ internal static class PostMapper
                     p.Key.UserProfilePicture,
                     p.Key.CommentCount,
                     p.Key.LikesCount,
+                    p.Key.UserHasLiked,
                     p.Key.CreatedAt
                 ),
-                p.Select(c => c.Id != 0 ? new CommentDto(c.Id, c.Content, c.CreatedAt, p.Key.Id, c.UserId) : null)
+                p.Select(c => c.Id != 0 ? new CommentDto(c.Id, c.Content, c.CreatedAt, p.Key.Id, c.UserId, c.CommentProfilePicture) : null)
                     .Where(c => c != null)
             )
         );
@@ -33,9 +34,10 @@ internal static class PostMapper
                 post.Key.UserProfilePicture,
                 post.Key.CommentCount,
                 post.Key.LikesCount,
+                post.Key.UserHasLiked,
                 post.Key.CreatedAt
             ),
-            post.Select(c => c.Id != 0 ? new CommentDto(c.Id, c.Content, c.CreatedAt, post.Key.Id, c.UserId) : null)
+            post.Select(c => c.Id != 0 ? new CommentDto(c.Id, c.Content, c.CreatedAt, post.Key.Id, c.UserId, c.CommentProfilePicture) : null)
                 .Where(c => c != null)
         );
 }

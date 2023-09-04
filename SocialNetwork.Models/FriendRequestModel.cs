@@ -24,3 +24,4 @@ public enum EFriendState
     Accepted, 
     Rejected
 }
+

@@ -40,8 +40,10 @@ public class PostController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetPosts([FromQuery] int? offset, [FromQuery] bool isDeleted = false)
     {
+        TokenUserInfo userInfo = HttpContext.ExtractDataFromToken();
+        
         IEnumerable<IGrouping<IPost, PostModel>> query =
-            await _mediator.Send(new PostListQuery(offset ?? 0, 10, isDeleted));
+            await _mediator.Send(new PostListQuery(userInfo.Id, offset ?? 0, 10, isDeleted));
 
         return Ok(new ApiResponse(200, true, query.ToPostDto()));
     }
@@ -56,6 +58,15 @@ public class PostController : ControllerBase
 
         return Ok(new ApiResponse(200, true, query.First().ToPostDto(), "Success"));
     }
+    
+    [HttpGet("user/{id}")]
+    public async Task<IActionResult> GetUserPosts(int id, [FromQuery] int? offset, [FromQuery] bool isDeleted = false)
+    {
+        IEnumerable<IGrouping<IPost, PostModel>> query = 
+            await _mediator.Send(new PostListByUserQuery(id, offset ?? 0, 11, isDeleted));
+        
+        return Ok(new ApiResponse(200, true, query.ToPostDto(), "Success"));
+    }
 
     [HttpPost]
     public async Task<IActionResult> AddPost(PostForm form)
@@ -66,9 +77,10 @@ public class PostController : ControllerBase
         if (command.IsFailure) 
             return BadRequest(new ApiResponse(400, false, command.Message));
 
-        IEnumerable<IGrouping<IPost, PostModel>> hubResponse = await _mediator.Send(new PostQuery(command.Data, false));
+        // mapping error, please check it.
+        //IEnumerable<IGrouping<IPost, PostModel>> hubResponse = await _mediator.Send(new PostQuery(command.Data, false));
 
-        await _postHubService.NotifyNewPostToFriends(tokenUser, new HubResponse("new_post", hubResponse.First().ToPostDto()));
+        //await _postHubService.NotifyNewPostToFriends(tokenUser, new HubResponse("new_post", hubResponse.First().ToPostDto()));
         return Created("", new ApiResponse(201, true, command.Message));
     }
 

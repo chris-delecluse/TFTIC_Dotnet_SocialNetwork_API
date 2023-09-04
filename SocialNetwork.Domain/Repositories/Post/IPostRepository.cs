@@ -9,5 +9,6 @@ public interface IPostRepository
     Task<int> Insert(PostCommand command);
     Task Update(UpdatePostCommand command);
     Task<IEnumerable<IGrouping<IPost, PostModel>>> Find(PostListQuery query);
+    Task<IEnumerable<IGrouping<IPost, PostModel>>> Find(PostListByUserQuery query);
     Task<IEnumerable<IGrouping<IPost, PostModel>>> Find(PostQuery query);
 }

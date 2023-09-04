@@ -50,6 +50,19 @@ public class PostRepository : IPostRepository
         return Task.FromResult(models.GroupBy(c => c.Posts));
     }
 
+    public Task<IEnumerable<IGrouping<IPost, PostModel>>> Find(PostListByUserQuery query)
+    {
+        if (_dbConnection.State is not ConnectionState.Open) 
+            _dbConnection.Open();
+
+        IEnumerable<PostModel> models =
+            _dbConnection.ExecuteReader("CSP_GetUserPostsGroupByComment", record => record.ToPost(), true, query)
+                .ToList();
+
+        _dbConnection.Close();
+        return Task.FromResult(models.GroupBy(c => c.Posts));
+    }
+
     public Task<IEnumerable<IGrouping<IPost, PostModel>>> Find(PostQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open) 

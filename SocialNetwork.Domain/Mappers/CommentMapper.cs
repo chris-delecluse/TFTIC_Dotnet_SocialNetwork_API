@@ -12,6 +12,7 @@ internal static class CommentMapper
             (string)record["content"],
             (DateTime)record["createdAt"],
             (int)record["postId"],
-            (int)record["userId"]
+            (int)record["userId"],
+            Mapper.GetValueOrDefault<string>(record, "commentProfilePicture")
         );
 }

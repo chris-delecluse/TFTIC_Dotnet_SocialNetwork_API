@@ -10,6 +10,7 @@ public class PostDto
     public string ProfilePicture { get; init; }
     public int CommentCount { get; init; }
     public int LikeCount { get; init; }
+    public bool UserHasLiked { get; init; }
     public DateTime? CreatedAt { get; init; }
 
     public PostDto(
@@ -21,6 +22,7 @@ public class PostDto
         string profilePicture,
         int commentCount,
         int likeCount,
+        bool userHasLiked,
         DateTime? createdAt
     )
     {
@@ -29,9 +31,10 @@ public class PostDto
         UserId = userId;
         FirstName = firstName;
         LastName = lastName;
-        CreatedAt = createdAt;
         ProfilePicture = profilePicture;
         CommentCount = commentCount;
         LikeCount = likeCount;
+        UserHasLiked = userHasLiked;
+        CreatedAt = createdAt;
     }
 }
