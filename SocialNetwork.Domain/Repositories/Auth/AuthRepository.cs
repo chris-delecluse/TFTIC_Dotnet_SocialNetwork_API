@@ -16,7 +16,7 @@ public class AuthRepository : IAuthRepository
         _dbConnection = dbConnection;
     }
 
-    public Task<UserModel?> GetPublicUser(LoginQuery query)
+    public Task<UserModel?> Find(LoginQuery query)
     {
         if (_dbConnection.State is not ConnectionState.Open)
             _dbConnection.Open();
@@ -29,7 +29,7 @@ public class AuthRepository : IAuthRepository
         return Task.FromResult(user);
     }
 
-    public Task<int> RegisterUser(RegisterCommand command)
+    public Task<int> Insert(RegisterCommand command)
     {
         if (_dbConnection.State is not ConnectionState.Open)
             _dbConnection.Open();

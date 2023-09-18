@@ -6,6 +6,6 @@ namespace SocialNetwork.Domain.Repositories.Auth;
 
 public interface IAuthRepository
 {
-    Task<UserModel?> GetPublicUser(LoginQuery query);
-    Task<int> RegisterUser(RegisterCommand command);
+    Task<UserModel?> Find(LoginQuery query);
+    Task<int> Insert(RegisterCommand command);
 }

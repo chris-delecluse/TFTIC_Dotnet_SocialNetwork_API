@@ -1,9 +1,9 @@
-using SocialNetwork.WebApi.Models.Models;
-
 namespace SocialNetwork.WebApi.SignalR.Interfaces;
 
 public interface IPostHubService
 {
-    Task NotifyNewPostToFriends<T>(TokenUserInfo tokenUser, T dataToSend);
-    Task NotifyLikeToPost<T>(int postId, T dataToSend);
+    Task NotifyNewPost<T>(T dataToSend);
+    Task NotifyPostLiked<T>(T dataToSend);
+    Task NotifyPostDisliked<T>(T dataToSend);
+    Task NotifyPostComment<T>(T dataToSend);
 }

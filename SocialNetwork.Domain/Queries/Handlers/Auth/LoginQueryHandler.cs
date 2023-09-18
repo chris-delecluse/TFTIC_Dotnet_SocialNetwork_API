@@ -13,6 +13,6 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, UserModel?>
 
     public async Task<UserModel?> Handle(LoginQuery request, CancellationToken cancellationToken)
     {
-        return await _authRepository.GetPublicUser(request);
+        return await _authRepository.Find(request);
     }
 }

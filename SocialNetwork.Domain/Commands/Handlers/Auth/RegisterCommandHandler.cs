@@ -17,7 +17,7 @@
         {
             try
             {
-                await _authRepository.RegisterUser(request);
+                await _authRepository.Insert(request);
                 return CommandResult.Success("User created successfully.");
             }
             catch (Exception)

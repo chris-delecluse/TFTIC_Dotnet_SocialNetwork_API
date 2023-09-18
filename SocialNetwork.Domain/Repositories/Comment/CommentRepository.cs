@@ -11,10 +11,7 @@ public class CommentRepository : ICommentRepository
 {
     private readonly IDbConnection _dbConnection;
 
-    public CommentRepository(IDbConnection dbConnection)
-    {
-        _dbConnection = dbConnection;
-    }
+    public CommentRepository(IDbConnection dbConnection) { _dbConnection = dbConnection; }
 
     public Task<int> Insert(CommentCommand command)
     {
@@ -51,5 +48,17 @@ public class CommentRepository : ICommentRepository
 
         _dbConnection.Close();
         return Task.FromResult(userIds);
+    }
+
+    public Task<CommentModel> Find(CommentByIdQuery query)
+    {
+        if (_dbConnection.State is not ConnectionState.Open) _dbConnection.Open();
+
+        CommentModel? models =
+            _dbConnection.ExecuteReader("CSP_GetCommentById", record => record.ToComment(), true, query)
+                .FirstOrDefault();
+
+        _dbConnection.Close();
+        return Task.FromResult(models);
     }
 }

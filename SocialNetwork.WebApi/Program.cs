@@ -26,7 +26,5 @@ app.MapControllers();
 app.MapHub<AuthHub>("/hub/auth");
 app.MapHub<ChatHub>("/hub/chat");
 app.MapHub<PostHub>("/hub/post");
-app.MapHub<CommentHub>("/hub/comment");
-app.MapHub<LikeHub>("/hub/like");
 
 app.Run();

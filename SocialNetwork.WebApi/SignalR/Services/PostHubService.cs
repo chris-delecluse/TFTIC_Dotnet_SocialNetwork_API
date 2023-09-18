@@ -1,45 +1,34 @@
 using System.Text.Json;
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.Models;
-using SocialNetwork.WebApi.Models.Models;
-using SocialNetwork.WebApi.SignalR.Extensions;
 using SocialNetwork.WebApi.SignalR.Hubs;
-using SocialNetwork.WebApi.SignalR.Tools;
 using SocialNetwork.WebApi.SignalR.Interfaces;
+using SocialNetwork.WebApi.SignalR.TypedHubs;
 
 namespace SocialNetwork.WebApi.SignalR.Services;
 
-public class PostHubService : FriendManager, IPostHubService
+public class PostHubService : IPostHubService
 {
-    private readonly IHubContext<PostHub, IClientHub> _postHubContext;
-    private readonly IHubContext<LikeHub, IClientHub> _likeHubContext;
+    private readonly IHubContext<PostHub, IPostHub> _postHubContext;
 
-    public PostHubService(
-        IMediator mediator,
-        IHubContext<PostHub, IClientHub> postHubContext,
-        IHubContext<LikeHub, IClientHub> likeHubContext
-    ) :
-        base(mediator)
+    public PostHubService(IHubContext<PostHub, IPostHub> postHubContext) { _postHubContext = postHubContext; }
+
+    public async Task NotifyNewPost<T>(T dataToSend)
     {
-        _postHubContext = postHubContext;
-        _likeHubContext = likeHubContext;
+        await _postHubContext.Clients.All.ReceiveNewPost(JsonSerializer.Serialize(dataToSend));
     }
 
-    public async Task NotifyNewPostToFriends<T>(TokenUserInfo tokenUser, T dataToSend)
+    public async Task NotifyPostLiked<T>(T dataToSend)
     {
-        foreach (FriendRequestModel friend in await GetUserFriendList(tokenUser.Id))
-        {
-            string groupName = $"PostGroup_{friend.ResponderId}";
-            await _postHubContext.AddToGroup(groupName);
-            await _postHubContext.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
-        }
+        await _postHubContext.Clients.All.ReceiveLike(JsonSerializer.Serialize(dataToSend));
     }
 
-    public async Task NotifyLikeToPost<T>(int postId, T dataToSend)
+    public async Task NotifyPostDisliked<T>(T dataToSend)
     {
-        string groupName = $"LikeGroup_{postId}";
-        await _likeHubContext.AddToGroup(groupName);
-        await _likeHubContext.SendMessage(groupName, JsonSerializer.Serialize(dataToSend));
+        await _postHubContext.Clients.All.ReceiveDislike(JsonSerializer.Serialize(dataToSend));
+    }
+
+    public async Task NotifyPostComment<T>(T dataToSend)
+    {
+        await _postHubContext.Clients.All.ReceiveComment(JsonSerializer.Serialize(dataToSend));
     }
 }

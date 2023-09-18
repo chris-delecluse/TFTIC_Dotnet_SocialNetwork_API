@@ -1,11 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.WebApi.SignalR.Interfaces;
+using SocialNetwork.WebApi.SignalR.TypedHubs;
 
 namespace SocialNetwork.WebApi.SignalR.Hubs;
 
-public class PostHub : Hub<IClientHub>
-{
-    [HubMethodName("JoinGroup")]
-    public async Task JoinGroup(string groupName) => 
-        await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-}
+public class PostHub : Hub<IPostHub> { }

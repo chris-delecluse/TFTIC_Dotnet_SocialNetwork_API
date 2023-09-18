@@ -15,7 +15,6 @@ using SocialNetwork.WebApi.Models.Forms.Post;
 using SocialNetwork.WebApi.Models.Mappers;
 using SocialNetwork.WebApi.Models.Models;
 using SocialNetwork.WebApi.SignalR.Interfaces;
-using SocialNetwork.WebApi.SignalR.Tools;
 
 namespace SocialNetwork.WebApi.Controllers;
 
@@ -23,17 +22,11 @@ namespace SocialNetwork.WebApi.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostHubService _postHubService;
-    private readonly ICommentHubService _commentHubService;
     private readonly IMediator _mediator;
 
-    public PostController(
-        IPostHubService postHubService,
-        ICommentHubService commentHubService,
-        IMediator mediator
-    )
+    public PostController(IPostHubService postHubService, IMediator mediator)
     {
         _postHubService = postHubService;
-        _commentHubService = commentHubService;
         _mediator = mediator;
     }
 
@@ -41,7 +34,7 @@ public class PostController : ControllerBase
     public async Task<IActionResult> GetPosts([FromQuery] int? offset, [FromQuery] bool isDeleted = false)
     {
         TokenUserInfo userInfo = HttpContext.ExtractDataFromToken();
-        
+
         IEnumerable<IGrouping<IPost, PostModel>> query =
             await _mediator.Send(new PostListQuery(userInfo.Id, offset ?? 0, 10, isDeleted));
 
@@ -53,18 +46,23 @@ public class PostController : ControllerBase
     {
         IEnumerable<IGrouping<IPost, PostModel>> query = await _mediator.Send(new PostQuery(id, isDeleted));
 
-        if (!query.Any()) 
-            return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));
+        if (!query.Any()) return NotFound(new ApiResponse(404, false, $"Post with id '{id}' does not exists."));
 
-        return Ok(new ApiResponse(200, true, query.First().ToPostDto(), "Success"));
+        return Ok(new ApiResponse(200,
+                true,
+                query.First()
+                    .ToPostDto(),
+                "Success"
+            )
+        );
     }
-    
+
     [HttpGet("user/{id}")]
     public async Task<IActionResult> GetUserPosts(int id, [FromQuery] int? offset, [FromQuery] bool isDeleted = false)
     {
-        IEnumerable<IGrouping<IPost, PostModel>> query = 
+        IEnumerable<IGrouping<IPost, PostModel>> query =
             await _mediator.Send(new PostListByUserQuery(id, offset ?? 0, 11, isDeleted));
-        
+
         return Ok(new ApiResponse(200, true, query.ToPostDto(), "Success"));
     }
 
@@ -74,13 +72,12 @@ public class PostController : ControllerBase
         TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
         ICommandResult<int> command = await _mediator.Send(new PostCommand(form.Content, tokenUser.Id));
 
-        if (command.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, command.Message));
+        if (command.IsFailure) return BadRequest(new ApiResponse(400, false, command.Message));
 
-        // mapping error, please check it.
-        //IEnumerable<IGrouping<IPost, PostModel>> hubResponse = await _mediator.Send(new PostQuery(command.Data, false));
-
-        //await _postHubService.NotifyNewPostToFriends(tokenUser, new HubResponse("new_post", hubResponse.First().ToPostDto()));
+        IEnumerable<IGrouping<IPost, PostModel>> hubResponse = await _mediator.Send(new PostQuery(command.Data, false));
+        await _postHubService.NotifyNewPost(hubResponse.First()
+            .ToPostDto()
+        );
         return Created("", new ApiResponse(201, true, command.Message));
     }
 
@@ -90,8 +87,7 @@ public class PostController : ControllerBase
         TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
         ICommandResult command = await _mediator.Send(new UpdatePostCommand(id, tokenUser.Id, true));
 
-        if (command.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, command.Message));
+        if (command.IsFailure) return BadRequest(new ApiResponse(400, false, command.Message));
 
         return NoContent();
     }
@@ -109,12 +105,11 @@ public class PostController : ControllerBase
     {
         TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
         ICommandResult<int> command = await _mediator.Send(new CommentCommand(form.Content, id, tokenUser.Id));
-        object hubMessage = new { Id = command.Data, PostId = id, form.Content };
 
-        if (command.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, command.Message));
+        if (command.IsFailure) return BadRequest(new ApiResponse(400, false, command.Message));
 
-        await _commentHubService.NotifyNewCommentToPost(tokenUser, id, new HubResponse("add_comment", hubMessage));
+        CommentModel? hubMessage = await _mediator.Send(new CommentByIdQuery(command.Data));
+        await _postHubService.NotifyPostComment(hubMessage.ToCommentDto());
         return Created("", new ApiResponse(201, true, command.Message));
     }
 
@@ -124,12 +119,11 @@ public class PostController : ControllerBase
         TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
         ICommandResult command = await _mediator.Send(new LikeCommand(id, tokenUser.Id));
 
-        if (command.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, command.Message));
+        if (command.IsFailure) return BadRequest(new ApiResponse(400, false, command.Message));
 
-        var hubResponse = new { tokenUser.Id, tokenUser.FirstName, tokenUser.LastName, PostId = id };
+        var hubResponse = new { UserId = tokenUser.Id, PostId = id };
 
-        await _postHubService.NotifyLikeToPost(id, new HubResponse("new_like", hubResponse));
+        await _postHubService.NotifyPostLiked(hubResponse);
         return Created("", new ApiResponse(201, true, command.Message));
     }
 
@@ -139,9 +133,11 @@ public class PostController : ControllerBase
         TokenUserInfo tokenUser = HttpContext.ExtractDataFromToken();
         ICommandResult command = await _mediator.Send(new RemoveLikeCommand(id, tokenUser.Id));
 
-        if (command.IsFailure) 
-            return BadRequest(new ApiResponse(400, false, command.Message));
+        if (command.IsFailure) return BadRequest(new ApiResponse(400, false, command.Message));
 
+        var hubResponse = new { UserId = tokenUser.Id, PostId = id };
+
+        await _postHubService.NotifyPostDisliked(hubResponse);
         return NoContent();
     }
 }

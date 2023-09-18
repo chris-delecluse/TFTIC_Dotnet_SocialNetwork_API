@@ -1,3 +1,6 @@
+use social_network
+go
+
 create procedure [dbo].[CSP_GetUserPostsGroupByComment] @isDeleted bit, @userId int, @offset int = 0, @limit int = 10
 as
 begin

@@ -3,15 +3,15 @@ namespace SocialNetwork.Models;
 public class MessageModel
 {
     public int Id { get; init; }
-    public UserProfileModel From { get; init; }
-    public UserProfileModel To { get; init; }
+    public FriendModel From { get; init; }
+    public FriendModel To { get; init; }
     public string Content { get; init; }
     public DateTime CreatedAt { get; init; }
 
     public MessageModel(
         int id,
-        UserProfileModel from,
-        UserProfileModel to,
+        FriendModel from,
+        FriendModel to,
         string content,
         DateTime createdAt
     )

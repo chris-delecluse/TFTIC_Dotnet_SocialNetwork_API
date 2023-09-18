@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SocialNetwork.Domain.Repositories.Auth;
+using SocialNetwork.Domain.Repositories.Chat;
 using SocialNetwork.Domain.Repositories.Comment;
 using SocialNetwork.Domain.Repositories.Friend;
 using SocialNetwork.Domain.Repositories.Like;
@@ -34,11 +35,11 @@ internal static class ServiceExtensions
         service.AddScoped<IPostRepository, PostRepository>();
         service.AddScoped<ICommentRepository, CommentRepository>();
         service.AddScoped<ILikeRepository, LikeRepository>();
+        service.AddScoped<IChatRepository, ChatRepository>();
         
         service.AddScoped<IAuthHubService, AuthHubService>();
         service.AddScoped<ITokenService, TokenService>();
         service.AddScoped<IPostHubService, PostHubService>();
-        service.AddScoped<ICommentHubService, CommentHubService>();
         
         service.AddSignalR();
         service.AddMediatR(opt => opt.RegisterServicesFromAssembly(typeof(Program).Assembly));
